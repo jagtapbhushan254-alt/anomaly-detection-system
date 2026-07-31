@@ -1,14 +1,12 @@
 # 🔍 Real-Time Anomaly Detection System for Financial Fraud
 
-<<<<<<< HEAD
+
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.1+-red.svg)](https://pytorch.org)
-[![Tests](https://img.shields.io/badge/Tests-14%20passed-brightgreen.svg)](tests/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-=======
+
 > **Status:** 🚧 Under Active Development
->>>>>>> 1aa7840 (Update README)
+ 
 
 A production-oriented machine learning project for detecting anomalous financial transactions using both classical machine learning and deep learning techniques. This repository is being built incrementally with a focus on software engineering best practices, reproducibility, and deployment.
 
