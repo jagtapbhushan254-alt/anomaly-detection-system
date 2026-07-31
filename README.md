@@ -4,7 +4,6 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.1+-red.svg)](https://pytorch.org)
 [![Tests](https://img.shields.io/badge/Tests-14%20passed-brightgreen.svg)](tests/)
-[![CI](https://github.com/jagtapbhushan254/anomaly-detection-system/actions/workflows/ci.yml/badge.svg)](https://github.com/jagtapbhushan254/anomaly-detection-system/actions)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A **production-grade, real-time anomaly detection pipeline** for financial transaction
