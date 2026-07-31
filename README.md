@@ -13,9 +13,8 @@ fraud detection. Combines classical ML (Isolation Forest) with deep learning
 a live **Streamlit dashboard**.
 
 > 📄 **Research Background:** This project extends my IEEE-published research on
-> secure data systems ([MegaShare, ICCCNT 2025, IIT Indore](https://ieeexplore.ieee.org))
-> into real-time ML inference pipelines. Built as part of MS Data Science application
-> portfolio — Fall 2027.
+> secure data systems ([MegaShare, ICCCNT 2025, IIT Indore])
+> into real-time ML inference pipelines. 
 
 ---
 
