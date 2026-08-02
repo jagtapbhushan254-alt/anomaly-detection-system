@@ -23,12 +23,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 FEATURE_COLUMNS = [
-    "amount", "hour_of_day", "day_of_week",
-    "transaction_count_1h", "avg_amount_7d",
-    "distance_from_home_km", "merchant_category_encoded",
+    "amount",
+    "hour_of_day",
+    "day_of_week",
+    "transaction_count_1h",
+    "avg_amount_7d",
+    "distance_from_home_km",
+    "merchant_category_encoded",
 ]
 
-MODEL_PATH  = "data/models/autoencoder.pt"
+MODEL_PATH = "data/models/autoencoder.pt"
 SCALER_PATH = "data/models/scaler_ae.joblib"
 THRESHOLD_PATH = "data/models/ae_threshold.joblib"
 
@@ -111,7 +115,9 @@ class AutoencoderDetector:
 
         dataset = torch.FloatTensor(X_scaled).to(self.device)
         optimizer = optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-5)
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.5)
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, patience=5, factor=0.5
+        )
         criterion = nn.MSELoss()
 
         self.model.train()
@@ -124,7 +130,7 @@ class AutoencoderDetector:
             n_batches = 0
 
             for i in range(0, len(dataset), batch_size):
-                batch = dataset[perm[i:i + batch_size]]
+                batch = dataset[perm[i : i + batch_size]]
                 optimizer.zero_grad()
                 reconstructed = self.model(batch)
                 loss = criterion(reconstructed, batch)
@@ -183,7 +189,12 @@ class AutoencoderDetector:
 
     # ── Persistence ───────────────────────────────────────────────────────────
 
-    def save(self, model_path=MODEL_PATH, scaler_path=SCALER_PATH, threshold_path=THRESHOLD_PATH):
+    def save(
+        self,
+        model_path=MODEL_PATH,
+        scaler_path=SCALER_PATH,
+        threshold_path=THRESHOLD_PATH,
+    ):
         self._check_trained()
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
         torch.save(self.model.state_dict(), model_path)
@@ -191,7 +202,12 @@ class AutoencoderDetector:
         joblib.dump(self.threshold, threshold_path)
         logger.info(f"Autoencoder saved to {model_path}")
 
-    def load(self, model_path=MODEL_PATH, scaler_path=SCALER_PATH, threshold_path=THRESHOLD_PATH):
+    def load(
+        self,
+        model_path=MODEL_PATH,
+        scaler_path=SCALER_PATH,
+        threshold_path=THRESHOLD_PATH,
+    ):
         self.model.load_state_dict(torch.load(model_path, map_location=self.device))
         self.model.eval()
         self.scaler = joblib.load(scaler_path)

@@ -20,9 +20,13 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from api.schemas import (
-    TransactionRequest, PredictionResponse,
-    BatchRequest, BatchResponse,
-    HealthResponse, MetricsResponse, RiskLevel
+    TransactionRequest,
+    PredictionResponse,
+    BatchRequest,
+    BatchResponse,
+    HealthResponse,
+    MetricsResponse,
+    RiskLevel,
 )
 from models.isolation_forest import IsolationForestDetector, FEATURE_COLUMNS
 from models.autoencoder import AutoencoderDetector
@@ -45,7 +49,7 @@ def load_models():
 
         models["if_model"] = if_model
         models["ae_model"] = ae_model
-        models["loaded"]   = True
+        models["loaded"] = True
         logger.info("✅ Both models loaded successfully")
     except FileNotFoundError:
         logger.warning("⚠️  Model files not found — run src/models/train.py first")
@@ -93,9 +97,14 @@ app.add_middleware(
 def prepare_features(txn: TransactionRequest) -> dict:
     """Convert request to feature dict for models."""
     merchant_map = {
-        "groceries": 0, "electronics": 1, "restaurant": 2,
-        "fuel": 3, "travel": 4, "healthcare": 5,
-        "entertainment": 6, "retail": 7
+        "groceries": 0,
+        "electronics": 1,
+        "restaurant": 2,
+        "fuel": 3,
+        "travel": 4,
+        "healthcare": 5,
+        "entertainment": 6,
+        "retail": 7,
     }
     return {
         "amount": txn.amount,
@@ -196,11 +205,13 @@ async def predict_batch(request: BatchRequest):
     for txn in request.transactions:
         features = prepare_features(txn)
         result = ensemble_predict(features)
-        results.append(PredictionResponse(
-            transaction_id=str(uuid.uuid4())[:12],
-            processing_time_ms=0,
-            **result,
-        ))
+        results.append(
+            PredictionResponse(
+                transaction_id=str(uuid.uuid4())[:12],
+                processing_time_ms=0,
+                **result,
+            )
+        )
 
     elapsed = round((time.perf_counter() - start) * 1000, 2)
     anomalies = sum(1 for r in results if r.is_anomaly)
@@ -219,6 +230,11 @@ async def get_metrics():
     """Return model performance metrics from training."""
     return MetricsResponse(
         isolation_forest={"precision": 0.89, "recall": 0.82, "f1": 0.85, "auc": 0.91},
-        autoencoder={"precision": 0.91, "recall": 0.86, "f1": 0.88, "reconstruction_threshold": 0.45},
+        autoencoder={
+            "precision": 0.91,
+            "recall": 0.86,
+            "f1": 0.88,
+            "reconstruction_threshold": 0.45,
+        },
         ensemble={"precision": 0.94, "recall": 0.88, "f1": 0.91, "avg_latency_ms": 9.2},
     )
