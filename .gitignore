@@ -13,6 +13,10 @@ venv/
 env/
 .venv/
 
+# Generated test/training artifacts
+data/models/*.json
+data/test_*.csv
+
 # Data & Models (too large for git)
 data/transactions.csv
 data/models/*.joblib
