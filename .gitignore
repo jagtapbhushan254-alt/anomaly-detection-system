@@ -1,24 +1,43 @@
-# Dataset
-data/raw/
-
-# Generated test data
-data/test_*.csv
-
-# Trained models
-data/models/*.pt
-data/models/*.joblib
-data/models/*.pkl
-data/models/*.json
-
-# Cache
-.pytest_cache/
+# Python
 __pycache__/
 *.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
 
-# Virtual env
-.venv/
+# Virtual environments
 venv/
+env/
+.venv/
+
+# Data & Models (too large for git)
+data/transactions.csv
+data/models/*.joblib
+data/models/*.pt
+
+# Keep model directory structure
+!data/models/.gitkeep
 
 # IDE
 .vscode/
 .idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Streamlit
+.streamlit/
+
+# Logs
+*.log

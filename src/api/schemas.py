@@ -10,9 +10,9 @@ from enum import Enum
 
 
 class RiskLevel(str, Enum):
-    LOW = "LOW"
+    LOW    = "LOW"
     MEDIUM = "MEDIUM"
-    HIGH = "HIGH"
+    HIGH   = "HIGH"
 
 
 class TransactionRequest(BaseModel):
@@ -27,16 +27,8 @@ class TransactionRequest(BaseModel):
     @field_validator("merchant_category")
     @classmethod
     def validate_category(cls, v):
-        valid = [
-            "groceries",
-            "electronics",
-            "restaurant",
-            "fuel",
-            "travel",
-            "healthcare",
-            "entertainment",
-            "retail",
-        ]
+        valid = ["groceries","electronics","restaurant","fuel",
+                 "travel","healthcare","entertainment","retail"]
         if v not in valid:
             raise ValueError(f"merchant_category must be one of {valid}")
         return v
@@ -50,7 +42,7 @@ class TransactionRequest(BaseModel):
                 "day_of_week": 6,
                 "transaction_count_1h": 8,
                 "avg_amount_7d": 450.00,
-                "distance_from_home_km": 1200.0,
+                "distance_from_home_km": 1200.0
             }
         }
     }

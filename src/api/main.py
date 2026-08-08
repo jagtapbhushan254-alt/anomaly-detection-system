@@ -20,13 +20,9 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from api.schemas import (
-    TransactionRequest,
-    PredictionResponse,
-    BatchRequest,
-    BatchResponse,
-    HealthResponse,
-    MetricsResponse,
-    RiskLevel,
+    TransactionRequest, PredictionResponse,
+    BatchRequest, BatchResponse,
+    HealthResponse, MetricsResponse, RiskLevel
 )
 from models.isolation_forest import IsolationForestDetector, FEATURE_COLUMNS
 from models.autoencoder import AutoencoderDetector
@@ -49,7 +45,7 @@ def load_models():
 
         models["if_model"] = if_model
         models["ae_model"] = ae_model
-        models["loaded"] = True
+        models["loaded"]   = True
         logger.info("✅ Both models loaded successfully")
     except FileNotFoundError:
         logger.warning("⚠️  Model files not found — run src/models/train.py first")
@@ -97,14 +93,9 @@ app.add_middleware(
 def prepare_features(txn: TransactionRequest) -> dict:
     """Convert request to feature dict for models."""
     merchant_map = {
-        "groceries": 0,
-        "electronics": 1,
-        "restaurant": 2,
-        "fuel": 3,
-        "travel": 4,
-        "healthcare": 5,
-        "entertainment": 6,
-        "retail": 7,
+        "groceries": 0, "electronics": 1, "restaurant": 2,
+        "fuel": 3, "travel": 4, "healthcare": 5,
+        "entertainment": 6, "retail": 7
     }
     return {
         "amount": txn.amount,
@@ -126,8 +117,15 @@ def ensemble_predict(features: dict) -> dict:
     is_anomaly = if_result["is_anomaly"] or ae_result["is_anomaly"]
 
     # Confidence: normalise IF score (negative = anomalous) + AE error
-    if_conf = max(0, min(1, (if_result["anomaly_score"] + 0.5) / 0.5))
-    ae_conf = max(0, min(1, 1 - ae_result["reconstruction_error"]))
+    if_score = abs(if_result["anomaly_score"])
+    if_conf = min(1.0, if_score)
+
+    threshold = ae_result["threshold"]
+    ae_conf = min(
+    1.0,
+    ae_result["reconstruction_error"] / max(threshold, 1e-6)
+    )
+    
     ensemble_conf = (if_conf + ae_conf) / 2
 
     # Risk level
@@ -205,13 +203,11 @@ async def predict_batch(request: BatchRequest):
     for txn in request.transactions:
         features = prepare_features(txn)
         result = ensemble_predict(features)
-        results.append(
-            PredictionResponse(
-                transaction_id=str(uuid.uuid4())[:12],
-                processing_time_ms=0,
-                **result,
-            )
-        )
+        results.append(PredictionResponse(
+            transaction_id=str(uuid.uuid4())[:12],
+            processing_time_ms=0,
+            **result,
+        ))
 
     elapsed = round((time.perf_counter() - start) * 1000, 2)
     anomalies = sum(1 for r in results if r.is_anomaly)
@@ -230,11 +226,6 @@ async def get_metrics():
     """Return model performance metrics from training."""
     return MetricsResponse(
         isolation_forest={"precision": 0.89, "recall": 0.82, "f1": 0.85, "auc": 0.91},
-        autoencoder={
-            "precision": 0.91,
-            "recall": 0.86,
-            "f1": 0.88,
-            "reconstruction_threshold": 0.45,
-        },
+        autoencoder={"precision": 0.91, "recall": 0.86, "f1": 0.88, "reconstruction_threshold": 0.45},
         ensemble={"precision": 0.94, "recall": 0.88, "f1": 0.91, "avg_latency_ms": 9.2},
     )

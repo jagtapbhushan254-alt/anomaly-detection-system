@@ -20,21 +20,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 MERCHANT_CATEGORIES = [
-    "groceries",
-    "electronics",
-    "restaurant",
-    "fuel",
-    "travel",
-    "healthcare",
-    "entertainment",
-    "retail",
+    "groceries", "electronics", "restaurant", "fuel",
+    "travel", "healthcare", "entertainment", "retail"
 ]
 
 # Fraud patterns — unusual but realistic
 FRAUD_PATTERNS = {
-    "high_amount_night": {"amount_range": (5000, 50000), "hour_range": (0, 5)},
-    "rapid_transactions": {"txn_count_1h": (10, 50), "amount_range": (100, 500)},
-    "distant_location": {"distance_km": (800, 5000), "amount_range": (200, 2000)},
+    "high_amount_night":   {"amount_range": (5000, 50000), "hour_range": (0, 5)},
+    "rapid_transactions":  {"txn_count_1h": (10, 50),     "amount_range": (100, 500)},
+    "distant_location":    {"distance_km":  (800, 5000),   "amount_range": (200, 2000)},
 }
 
 
@@ -64,7 +58,7 @@ def generate_normal_transaction() -> Transaction:
         avg_amount_7d=round(np.random.lognormal(mean=4.0, sigma=0.8), 2),
         distance_from_home_km=round(abs(np.random.normal(loc=15, scale=20)), 2),
         is_fraud=False,
-        timestamp=time.time(),
+        timestamp=time.time()
     )
 
 
@@ -73,17 +67,21 @@ def generate_fraud_transaction() -> Transaction:
     pattern_name = np.random.choice(list(FRAUD_PATTERNS.keys()))
     pattern = FRAUD_PATTERNS[pattern_name]
 
-    amount = round(np.random.uniform(*pattern.get("amount_range", (500, 5000))), 2)
+    amount = round(np.random.uniform(
+        *pattern.get("amount_range", (500, 5000))
+    ), 2)
 
-    hour = (
-        int(np.random.uniform(*pattern.get("hour_range", (0, 23))))
-        if "hour_range" in pattern
-        else int(np.random.randint(0, 24))
-    )
+    hour = int(np.random.uniform(
+        *pattern.get("hour_range", (0, 23))
+    )) if "hour_range" in pattern else int(np.random.randint(0, 24))
 
-    txn_count = int(np.random.uniform(*pattern.get("txn_count_1h", (1, 3))))
+    txn_count = int(np.random.uniform(
+        *pattern.get("txn_count_1h", (1, 3))
+    ))
 
-    distance = round(np.random.uniform(*pattern.get("distance_km", (50, 200))), 2)
+    distance = round(np.random.uniform(
+        *pattern.get("distance_km", (50, 200))
+    ), 2)
 
     return Transaction(
         transaction_id=str(uuid.uuid4())[:12],
@@ -95,20 +93,22 @@ def generate_fraud_transaction() -> Transaction:
         avg_amount_7d=round(np.random.lognormal(mean=4.0, sigma=0.8), 2),
         distance_from_home_km=distance,
         is_fraud=True,
-        timestamp=time.time(),
+        timestamp=time.time()
     )
 
 
 def _hour_weights() -> list:
     """Business hours have higher transaction probability."""
     weights = np.ones(24)
-    weights[8:20] *= 4  # Business hours: 8am - 8pm
+    weights[8:20] *= 4   # Business hours: 8am - 8pm
     weights[12:14] *= 2  # Lunch peak
     return (weights / weights.sum()).tolist()
 
 
 def generate_stream(
-    fraud_rate: float = 0.02, delay_seconds: float = 0.1, total: int = None
+    fraud_rate: float = 0.02,
+    delay_seconds: float = 0.1,
+    total: int = None
 ) -> Generator[Transaction, None, None]:
     """
     Infinite (or bounded) transaction stream generator.
@@ -122,20 +122,14 @@ def generate_stream(
         Transaction dataclass instances
     """
     count = 0
-    logger.info(
-        f"Stream started | fraud_rate={fraud_rate:.1%} | delay={delay_seconds}s"
-    )
+    logger.info(f"Stream started | fraud_rate={fraud_rate:.1%} | delay={delay_seconds}s")
 
     while total is None or count < total:
         is_fraud = np.random.random() < fraud_rate
-        txn = (
-            generate_fraud_transaction() if is_fraud else generate_normal_transaction()
-        )
+        txn = generate_fraud_transaction() if is_fraud else generate_normal_transaction()
 
         if is_fraud:
-            logger.warning(
-                f"⚠️  FRAUD transaction generated: {txn.transaction_id} | ${txn.amount}"
-            )
+            logger.warning(f"⚠️  FRAUD transaction generated: {txn.transaction_id} | ${txn.amount}")
 
         yield txn
         count += 1
@@ -147,7 +141,7 @@ def generate_stream(
 def generate_training_dataset(
     n_samples: int = 10000,
     fraud_rate: float = 0.02,
-    save_path: str = "data/transactions.csv",
+    save_path: str = "data/transactions.csv"
 ) -> pd.DataFrame:
     """
     Generate a labeled dataset for model training.
@@ -169,7 +163,9 @@ def generate_training_dataset(
     df = pd.DataFrame(transactions)
 
     # Encode categorical feature
-    df["merchant_category_encoded"] = pd.Categorical(df["merchant_category"]).codes
+    df["merchant_category_encoded"] = pd.Categorical(
+        df["merchant_category"]
+    ).codes
 
     logger.info(
         f"Dataset ready: {len(df)} rows | "
@@ -177,7 +173,6 @@ def generate_training_dataset(
     )
 
     import os
-
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     df.to_csv(save_path, index=False)
     logger.info(f"Saved to {save_path}")
@@ -188,11 +183,7 @@ def generate_training_dataset(
 if __name__ == "__main__":
     # Quick demo
     print("🚀 Starting transaction stream (5 transactions)...\n")
-    for i, txn in enumerate(
-        generate_stream(fraud_rate=0.3, delay_seconds=0.5, total=5)
-    ):
+    for i, txn in enumerate(generate_stream(fraud_rate=0.3, delay_seconds=0.5, total=5)):
         label = "🔴 FRAUD" if txn.is_fraud else "🟢 NORMAL"
-        print(
-            f"{label} | ID: {txn.transaction_id} | Amount: ${txn.amount:,.2f} | "
-            f"Hour: {txn.hour_of_day}:00 | Distance: {txn.distance_from_home_km}km"
-        )
+        print(f"{label} | ID: {txn.transaction_id} | Amount: ${txn.amount:,.2f} | "
+              f"Hour: {txn.hour_of_day}:00 | Distance: {txn.distance_from_home_km}km")
