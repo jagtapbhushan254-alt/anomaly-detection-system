@@ -16,7 +16,7 @@ from producer.stream_producer import generate_normal_transaction, generate_fraud
 from dataclasses import asdict
 
 st.set_page_config(page_title="Anomaly Detection", page_icon="🔍", layout="wide")
-API_URL = "http://localhost:8000"
+API_URL = "https://anomaly-detection-system-h4jj.onrender.com"
 
 st.markdown("""
 <style>
