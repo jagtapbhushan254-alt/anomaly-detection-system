@@ -135,7 +135,7 @@ with st.sidebar:
         st.markdown('<div class="status-offline">● API OFFLINE</div>', unsafe_allow_html=True)
         st.caption("Start FastAPI on port 8000 to enable detection.")
     st.markdown("---")
-    st.caption("Monitoring mode • Local inference • Dual-model ensemble")
+    st.caption("Monitoring mode • Real-time API inference • Dual-model ensemble")
 
 # Header
 st.markdown("""
