@@ -10,6 +10,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import time, random, sys, os
+from datetime import datetime
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from producer.stream_producer import generate_normal_transaction, generate_fraud_transaction
 from dataclasses import asdict
@@ -19,12 +20,70 @@ API_URL = "http://localhost:8000"
 
 st.markdown("""
 <style>
-.anomaly-alert{background:#2d0000;border-radius:8px;padding:.75rem 1rem;
-border-left:4px solid #ff4444;color:#ff8888;margin:.3rem 0;font-size:.85rem}
-.risk-high{color:#ff4444;font-weight:bold}
-.risk-medium{color:#ffaa00;font-weight:bold}
-.risk-low{color:#00cc44;font-weight:bold}
-</style>""", unsafe_allow_html=True)
+    .block-container {
+        padding: 1.1rem 1.7rem 2rem;
+        max-width: 1600px;
+    }
+    .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 1.45rem 1.6rem;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #101827 0%, #18263d 55%, #101827 100%);
+        border: 1px solid #293a55;
+        box-shadow: 0 12px 35px rgba(0,0,0,.18);
+        margin-bottom: 1.15rem;
+    }
+    .hero:after {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        right: -80px;
+        top: -120px;
+        border-radius: 50%;
+        background: rgba(59,130,246,.12);
+        filter: blur(4px);
+    }
+    .hero-title { font-size: 2rem; font-weight: 800; margin: 0; letter-spacing: -.03em; }
+    .hero-subtitle { color:#9fb0c7; margin-top:.35rem; font-size:.9rem; }
+    .live-pill {
+        display:inline-block; margin-top:.75rem; padding:.25rem .6rem;
+        border-radius:999px; background:#102a24; color:#4ade80;
+        border:1px solid #1d5c45; font-size:.72rem; font-weight:700;
+    }
+    .section-title { font-size:1.08rem; font-weight:750; margin:.25rem 0 .7rem; }
+    .mini-card {
+        background:#101722; border:1px solid #263449; border-radius:14px;
+        padding:.8rem 1rem; min-height:78px;
+    }
+    .mini-label { color:#8494aa; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; }
+    .mini-value { font-size:1.35rem; font-weight:750; margin-top:.2rem; }
+    .mini-sub { color:#718198; font-size:.7rem; margin-top:.15rem; }
+    .alert-card {
+        background:#101722; border:1px solid #29384d; border-left:4px solid #ef4444;
+        border-radius:11px; padding:.7rem .8rem; margin:.42rem 0;
+    }
+    .risk-high { color:#f87171; font-weight:750; }
+    .risk-medium { color:#fbbf24; font-weight:750; }
+    .risk-low { color:#4ade80; font-weight:750; }
+    .muted { color:#8494aa; font-size:.74rem; }
+    .status-online {
+        background:#0e2a20; border:1px solid #1c5b43; color:#4ade80;
+        border-radius:10px; padding:.65rem .75rem; font-weight:700;
+    }
+    .status-offline {
+        background:#321b22; border:1px solid #6d3342; color:#fb7185;
+        border-radius:10px; padding:.65rem .75rem; font-weight:700;
+    }
+    .side-brand { font-size:1.18rem; font-weight:800; }
+    .side-caption { color:#8796aa; font-size:.76rem; margin-bottom:1rem; }
+    .table-head {
+        color:#8291a6; font-size:.7rem; text-transform:uppercase;
+        letter-spacing:.06em; padding:.25rem 0;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 for key, val in [("transactions",[]),("anomalies",[]),("total",0),("running",False)]:
     if key not in st.session_state:
@@ -42,7 +101,9 @@ def call_api(txn_dict):
 
 # Sidebar
 with st.sidebar:
-    st.markdown("## ⚙️ Controls")
+    st.markdown('<div class="side-brand">⚡ Sentinel Monitor</div>', unsafe_allow_html=True)
+    st.markdown('<div class="side-caption">Financial risk operations console</div>', unsafe_allow_html=True)
+    st.markdown("### 🎛️ Simulation Controls")
     fraud_rate   = st.slider("Fraud Rate (%)", 1, 30, 5) / 100
     refresh_rate = st.slider("Refresh Speed (s)", 1, 5, 2)
     max_history  = st.slider("History Window", 20, 200, 50)
@@ -59,38 +120,66 @@ with st.sidebar:
         st.session_state.anomalies    = []
         st.session_state.total        = 0
     st.markdown("---")
+    st.markdown("### 🧠 Detection Engine")
     try:
         h = requests.get(f"{API_URL}/health", timeout=1).json()
-        st.success("✅ API Online")
-        st.caption(f"IF: {'✅' if h['isolation_forest'] else '❌'}  AE: {'✅' if h['autoencoder'] else '❌'}")
+        st.markdown(
+            f'<div class="status-online">● API ONLINE</div>',
+            unsafe_allow_html=True
+        )
+        st.caption(
+            f"Isolation Forest {'✓' if h.get('isolation_forest') else '✗'}  •  "
+            f"Autoencoder {'✓' if h.get('autoencoder') else '✗'}"
+        )
     except:
-        st.error("❌ API Offline")
+        st.markdown('<div class="status-offline">● API OFFLINE</div>', unsafe_allow_html=True)
+        st.caption("Start FastAPI on port 8000 to enable detection.")
     st.markdown("---")
-    st.markdown("**Author:** Bhushan Prabhakar Jagtap")
-    st.markdown("**IEEE ICCCNT 2025** | **ICASET 2026**")
+    st.caption("Monitoring mode • Local inference • Dual-model ensemble")
 
 # Header
-st.markdown("# 🔍 Real-Time Anomaly Detection System")
-st.markdown("Financial Fraud Detection — Isolation Forest + PyTorch Autoencoder")
-st.markdown("---")
+st.markdown("""
+<div class="hero">
+    <div class="hero-title">🛡️ Sentinel Risk Intelligence</div>
+    <div class="hero-subtitle">
+        Real-time transaction surveillance • Dual-model anomaly detection •
+        Automated risk classification
+    </div>
+    <div class="live-pill">● LIVE RISK MONITORING</div>
+</div>
+""", unsafe_allow_html=True)
 
 # KPIs
-k1,k2,k3,k4,k5 = st.columns(5)
 total = st.session_state.total
-n_an  = len(st.session_state.anomalies)
-rate  = (n_an/total*100) if total > 0 else 0
-high  = sum(1 for a in st.session_state.anomalies if a.get("risk_level")=="HIGH")
-k1.metric("Transactions", f"{total:,}")
-k2.metric("Anomalies", f"{n_an:,}", delta=f"+{min(n_an,1)}" if n_an else None, delta_color="inverse")
-k3.metric("Anomaly Rate", f"{rate:.1f}%")
-k4.metric("High Risk", f"{high}", delta_color="inverse")
-k5.metric("Status", "🟢 Running" if st.session_state.running else "🔴 Stopped")
-st.markdown("---")
+n_an = len(st.session_state.anomalies)
+rate = (n_an / total * 100) if total > 0 else 0
+high = sum(1 for a in st.session_state.anomalies if a.get("risk_level") == "HIGH")
+medium = sum(1 for a in st.session_state.anomalies if a.get("risk_level") == "MEDIUM")
+avg_conf = (
+    sum(float(a.get("ensemble_confidence", 0)) for a in st.session_state.transactions)
+    / len(st.session_state.transactions)
+    if st.session_state.transactions else 0
+)
+
+k1, k2, k3, k4, k5 = st.columns(5)
+with k1:
+    st.markdown(f'<div class="mini-card"><div class="mini-label">Transactions screened</div><div class="mini-value">{total:,}</div><div class="mini-sub">Live transaction volume</div></div>', unsafe_allow_html=True)
+with k2:
+    st.markdown(f'<div class="mini-card"><div class="mini-label">Anomalies detected</div><div class="mini-value">{n_an:,}</div><div class="mini-sub">Potentially suspicious</div></div>', unsafe_allow_html=True)
+with k3:
+    st.markdown(f'<div class="mini-card"><div class="mini-label">Anomaly rate</div><div class="mini-value">{rate:.1f}%</div><div class="mini-sub">Share of screened activity</div></div>', unsafe_allow_html=True)
+with k4:
+    st.markdown(f'<div class="mini-card"><div class="mini-label">High-risk alerts</div><div class="mini-value">{high}</div><div class="mini-sub">{medium} medium-risk alerts</div></div>', unsafe_allow_html=True)
+with k5:
+    system = "RUNNING" if st.session_state.running else "PAUSED"
+    st.markdown(f'<div class="mini-card"><div class="mini-label">Detection engine</div><div class="mini-value">{system}</div><div class="mini-sub">Avg confidence {avg_conf*100:.1f}%</div></div>', unsafe_allow_html=True)
+
+st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
 # Charts
-ch, al = st.columns([2,1])
+ch, al = st.columns([1.75, 1])
 with ch:
-    st.markdown("### 📈 Transaction Stream")
+    st.markdown('<div class="section-title">📈 Live Transaction Stream</div>', unsafe_allow_html=True)
     if st.session_state.transactions:
         df = pd.DataFrame(st.session_state.transactions[-max_history:])
         fig = go.Figure()
@@ -98,7 +187,7 @@ with ch:
             sub = df[df["is_anomaly"]==flag]
             fig.add_trace(go.Scatter(
                 x=sub.index, y=sub["amount"], mode="markers", name=name,
-                marker=dict(color=color, size=8 if flag else 6,
+                marker=dict(color=color, size=9 if flag else 6,
                            symbol=sym, line=dict(width=2,color=color) if flag else dict(width=0))
             ))
         fig.update_layout(height=300, paper_bgcolor="#0e1117", plot_bgcolor="#0e1117",
@@ -109,21 +198,39 @@ with ch:
         st.info("Press ▶️ Start to begin monitoring.")
 
 with al:
-    st.markdown("### 🚨 Live Alerts")
+    st.markdown('<div class="section-title">🚨 Live Security Alerts</div>', unsafe_allow_html=True)
     if st.session_state.anomalies:
         for a in reversed(st.session_state.anomalies[-8:]):
             rc = f"risk-{a.get('risk_level','LOW').lower()}"
-            st.markdown(f"""<div class="anomaly-alert">
-                🚨 <b>${a.get('amount',0):,.0f}</b> —
-                <span class="{rc}">{a.get('risk_level','?')}</span><br>
-                Score: {a.get('anomaly_score',0):.3f} | AE: {a.get('reconstruction_error',0):.4f}
+            st.markdown(f"""<div class="alert-card">
+                🚨 <b>${a.get('amount',0):,.2f}</b>
+                <span class="{rc}"> {a.get('risk_level','?')}</span><br>
+                <span class="muted">
+                    IF Score: {a.get('anomaly_score',0):.3f}
+                    &nbsp; • &nbsp;
+                    AE Error: {a.get('reconstruction_error',0):.4f}
+                    &nbsp; • &nbsp;
+                    Confidence: {a.get('ensemble_confidence',0)*100:.1f}%
+                </span>
             </div>""", unsafe_allow_html=True)
     else:
         st.caption("No anomalies yet")
 
+# Recent transaction activity
+if st.session_state.transactions:
+    st.markdown('<div class="section-title">🧾 Recent Transaction Activity</div>', unsafe_allow_html=True)
+    recent = pd.DataFrame(st.session_state.transactions[-8:][::-1]).copy()
+    recent["Status"] = recent["is_anomaly"].map({True: "🚨 ALERT", False: "✓ NORMAL"})
+    recent["Amount"] = recent["amount"].map(lambda x: f"${x:,.2f}")
+    recent["Confidence"] = recent["ensemble_confidence"].map(lambda x: f"{x*100:.1f}%")
+    recent["Risk"] = recent["risk_level"].map(lambda x: str(x))
+    recent = recent[["Status", "Amount", "merchant_category", "Risk", "Confidence"]]
+    recent.columns = ["Status", "Amount", "Merchant", "Risk", "Confidence"]
+    st.dataframe(recent, use_container_width=True, hide_index=True)
+
 # Distribution charts
 if len(st.session_state.transactions) > 10:
-    st.markdown("### 📊 Score Distributions")
+    st.markdown('<div class="section-title">📊 Model Signal Analysis</div>', unsafe_allow_html=True)
     df_all = pd.DataFrame(st.session_state.transactions)
     d1, d2 = st.columns(2)
     with d1:
@@ -138,6 +245,17 @@ if len(st.session_state.transactions) > 10:
             color_discrete_map={False:"#00cc44", True:"#ff4444"})
         fig3.update_layout(height=250, margin=dict(l=0,r=0,t=30,b=0))
         st.plotly_chart(fig3, use_container_width=True)
+
+    st.markdown('<div class="section-title">🎯 Ensemble Confidence</div>', unsafe_allow_html=True)
+    fig4 = px.histogram(
+        df_all,
+        x="ensemble_confidence",
+        nbins=20,
+        title="Combined Model Confidence",
+        template="plotly_dark"
+    )
+    fig4.update_layout(height=240, margin=dict(l=0, r=0, t=30, b=0), xaxis_title="Confidence", yaxis_title="Transactions")
+    st.plotly_chart(fig4, use_container_width=True)
 
 # Simulation loop
 if st.session_state.running:
