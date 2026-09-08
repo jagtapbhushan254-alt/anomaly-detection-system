@@ -267,7 +267,8 @@ if st.session_state.running:
                "hour_of_day":txn.hour_of_day,"is_anomaly":result["is_anomaly"],
                "anomaly_score":result["anomaly_score"],
                "reconstruction_error":result["reconstruction_error"],
-               "risk_level":result["risk_level"]}
+               "risk_level":result["risk_level"],
+               "ensemble_confidence":result["ensemble_confidence"]}
         st.session_state.transactions.append(row)
         st.session_state.total += 1
         if result["is_anomaly"]:
