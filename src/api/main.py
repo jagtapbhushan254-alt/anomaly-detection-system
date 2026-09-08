@@ -129,12 +129,15 @@ def ensemble_predict(features: dict) -> dict:
     ensemble_conf = (if_conf + ae_conf) / 2
 
     # Risk level
-    if if_result["anomaly_score"] < -0.3 or ae_result["reconstruction_error"] > 0.7:
-        risk = RiskLevel.HIGH
-    elif is_anomaly:
-        risk = RiskLevel.MEDIUM
-    else:
+    if not is_anomaly:
         risk = RiskLevel.LOW
+    elif (
+        if_result["anomaly_score"] < -0.3
+        or ae_result["reconstruction_error"] > threshold
+    ):
+        risk = RiskLevel.HIGH
+    else:
+        risk = RiskLevel.MEDIUM
 
     return {
         "is_anomaly": is_anomaly,
