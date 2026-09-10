@@ -4,22 +4,25 @@ Streamlit Live Dashboard — Real-Time Anomaly Detection
 Author: Bhushan Jagtap
 """
 
+from dataclasses import asdict
+from producer.stream_producer import (
+    generate_normal_transaction,
+    generate_fraud_transaction,
+)
 import streamlit as st
 import requests
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
-import time, random, sys, os
-from datetime import datetime
+import time
+import random
+import sys
+import os
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from producer.stream_producer import (
-    generate_normal_transaction,
-    generate_fraud_transaction,
-)
-from dataclasses import asdict
 
-st.set_page_config(page_title="Anomaly Detection", page_icon="🔍", layout="wide")
+st.set_page_config(page_title="Anomaly Detection",
+                   page_icon="🔍", layout="wide")
 API_URL = "https://anomaly-detection-system-h4jj.onrender.com"
 
 st.markdown(
@@ -116,15 +119,15 @@ def call_api(txn_dict):
     try:
         r = requests.post(f"{API_URL}/predict", json=payload, timeout=2)
         return r.json() if r.status_code == 200 else None
-    except:
+    except BaseException:
         return None
 
 
 # Sidebar
 with st.sidebar:
     st.markdown(
-        '<div class="side-brand">⚡ Sentinel Monitor</div>', unsafe_allow_html=True
-    )
+        '<div class="side-brand">⚡ Sentinel Monitor</div>',
+        unsafe_allow_html=True)
     st.markdown(
         '<div class="side-caption">Financial risk operations console</div>',
         unsafe_allow_html=True,
@@ -150,15 +153,17 @@ with st.sidebar:
     try:
         h = requests.get(f"{API_URL}/health", timeout=1).json()
         st.markdown(
-            f'<div class="status-online">● API ONLINE</div>', unsafe_allow_html=True
+            '<div class="status-online">● API ONLINE</div>',
+            unsafe_allow_html=True,
         )
         st.caption(
-            f"Isolation Forest {'✓' if h.get('isolation_forest') else '✗'}  •  "
+            f"Isolation Forest {'✓' if h.get('isolation_forest') else '✗'} • "
             f"Autoencoder {'✓' if h.get('autoencoder') else '✗'}"
         )
-    except:
+    except BaseException:
         st.markdown(
-            '<div class="status-offline">● API OFFLINE</div>', unsafe_allow_html=True
+            '<div class="status-offline">● API OFFLINE</div>',
+            unsafe_allow_html=True,
         )
         st.caption("Start FastAPI on port 8000 to enable detection.")
     st.markdown("---")
@@ -183,10 +188,13 @@ st.markdown(
 total = st.session_state.total
 n_an = len(st.session_state.anomalies)
 rate = (n_an / total * 100) if total > 0 else 0
-high = sum(1 for a in st.session_state.anomalies if a.get("risk_level") == "HIGH")
-medium = sum(1 for a in st.session_state.anomalies if a.get("risk_level") == "MEDIUM")
+high = sum(1 for a in st.session_state.anomalies if a.get(
+    "risk_level") == "HIGH")
+medium = sum(1 for a in st.session_state.anomalies if a.get(
+    "risk_level") == "MEDIUM")
 avg_conf = (
-    sum(float(a.get("ensemble_confidence", 0)) for a in st.session_state.transactions)
+    sum(float(a.get("ensemble_confidence", 0))
+        for a in st.session_state.transactions)
     / len(st.session_state.transactions)
     if st.session_state.transactions
     else 0
@@ -195,17 +203,20 @@ avg_conf = (
 k1, k2, k3, k4, k5 = st.columns(5)
 with k1:
     st.markdown(
-        f'<div class="mini-card"><div class="mini-label">Transactions screened</div><div class="mini-value">{total:,}</div><div class="mini-sub">Live transaction volume</div></div>',
+        f'<div class="mini-card"><div class="mini-label">Transactions screened</div><div class="mini-value">{
+            total:,    }</div><div class="mini-sub">Live transaction volume</div></div>',
         unsafe_allow_html=True,
     )
 with k2:
     st.markdown(
-        f'<div class="mini-card"><div class="mini-label">Anomalies detected</div><div class="mini-value">{n_an:,}</div><div class="mini-sub">Potentially suspicious</div></div>',
+        f'<div class="mini-card"><div class="mini-label">Anomalies detected</div><div class="mini-value">{
+            n_an:,    }</div><div class="mini-sub">Potentially suspicious</div></div>',
         unsafe_allow_html=True,
     )
 with k3:
     st.markdown(
-        f'<div class="mini-card"><div class="mini-label">Anomaly rate</div><div class="mini-value">{rate:.1f}%</div><div class="mini-sub">Share of screened activity</div></div>',
+        f'<div class="mini-card"><div class="mini-label">Anomaly rate</div><div class="mini-value">{
+            rate:.1f}%</div><div class="mini-sub">Share of screened activity</div></div>',
         unsafe_allow_html=True,
     )
 with k4:
@@ -216,7 +227,9 @@ with k4:
 with k5:
     system = "RUNNING" if st.session_state.running else "PAUSED"
     st.markdown(
-        f'<div class="mini-card"><div class="mini-label">Detection engine</div><div class="mini-value">{system}</div><div class="mini-sub">Avg confidence {avg_conf*100:.1f}%</div></div>',
+        f'<div class="mini-card"><div class="mini-label">Detection engine</div>'
+        f'<div class="mini-value">{system}</div>'
+        f'<div class="mini-sub">Avg confidence {avg_conf * 100:.1f}%</div></div>',
         unsafe_allow_html=True,
     )
 
@@ -247,7 +260,8 @@ with ch:
                         color=color,
                         size=9 if flag else 6,
                         symbol=sym,
-                        line=dict(width=2, color=color) if flag else dict(width=0),
+                        line=dict(width=2, color=color) if flag else dict(
+                            width=0),
                     ),
                 )
             )
@@ -271,17 +285,17 @@ with al:
     )
     if st.session_state.anomalies:
         for a in reversed(st.session_state.anomalies[-8:]):
-            rc = f"risk-{a.get('risk_level','LOW').lower()}"
+            rc = f"risk-{a.get('risk_level', 'LOW').lower()}"
             st.markdown(
                 f"""<div class="alert-card">
-                🚨 <b>${a.get('amount',0):,.2f}</b>
-                <span class="{rc}"> {a.get('risk_level','?')}</span><br>
+                🚨 <b>${a.get('amount', 0):,.2f}</b>
+                <span class="{rc}"> {a.get('risk_level', '?')}</span><br>
                 <span class="muted">
-                    IF Score: {a.get('anomaly_score',0):.3f}
+                    IF Score: {a.get('anomaly_score', 0):.3f}
                     &nbsp; • &nbsp;
-                    AE Error: {a.get('reconstruction_error',0):.4f}
+                    AE Error: {a.get('reconstruction_error', 0):.4f}
                     &nbsp; • &nbsp;
-                    Confidence: {a.get('ensemble_confidence',0)*100:.1f}%
+                    Confidence: {a.get('ensemble_confidence', 0) * 100:.1f}%
                 </span>
             </div>""",
                 unsafe_allow_html=True,
@@ -296,11 +310,14 @@ if st.session_state.transactions:
         unsafe_allow_html=True,
     )
     recent = pd.DataFrame(st.session_state.transactions[-8:][::-1]).copy()
-    recent["Status"] = recent["is_anomaly"].map({True: "🚨 ALERT", False: "✓ NORMAL"})
+    recent["Status"] = recent["is_anomaly"].map(
+        {True: "🚨 ALERT", False: "✓ NORMAL"})
     recent["Amount"] = recent["amount"].map(lambda x: f"${x:,.2f}")
-    recent["Confidence"] = recent["ensemble_confidence"].map(lambda x: f"{x*100:.1f}%")
+    recent["Confidence"] = recent["ensemble_confidence"].map(
+        lambda x: f"{x * 100:.1f}%")
     recent["Risk"] = recent["risk_level"].map(lambda x: str(x))
-    recent = recent[["Status", "Amount", "merchant_category", "Risk", "Confidence"]]
+    recent = recent[["Status", "Amount",
+                     "merchant_category", "Risk", "Confidence"]]
     recent.columns = ["Status", "Amount", "Merchant", "Risk", "Confidence"]
     st.dataframe(recent, use_container_width=True, hide_index=True)
 

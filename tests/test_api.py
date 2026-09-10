@@ -8,7 +8,8 @@ Author: Bhushan Jagtap
 """
 
 import pytest
-import sys, os
+import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -47,7 +48,8 @@ class TestSchemas:
         from src.api.schemas import TransactionRequest
 
         with pytest.raises(Exception):
-            TransactionRequest(**{**SAMPLE_NORMAL, "merchant_category": "invalid_cat"})
+            TransactionRequest(
+                **{**SAMPLE_NORMAL, "merchant_category": "invalid_cat"})
 
     def test_invalid_hour(self):
         from src.api.schemas import TransactionRequest
@@ -72,14 +74,14 @@ class TestStreamProducer:
         assert txn.amount > 0
         assert txn.hour_of_day in range(24)
         assert txn.day_of_week in range(7)
-        assert txn.is_fraud == False
+        assert txn.is_fraud is False
 
     def test_fraud_transaction_structure(self):
         from src.producer.stream_producer import generate_fraud_transaction
 
         txn = generate_fraud_transaction()
         assert txn.amount > 0
-        assert txn.is_fraud == True
+        assert txn.is_fraud
 
     def test_stream_generates_correct_count(self):
         from src.producer.stream_producer import generate_stream
@@ -90,7 +92,8 @@ class TestStreamProducer:
     def test_fraud_rate_approximately_correct(self):
         from src.producer.stream_producer import generate_stream
 
-        txns = list(generate_stream(fraud_rate=0.5, delay_seconds=0, total=1000))
+        txns = list(generate_stream(
+            fraud_rate=0.5, delay_seconds=0, total=1000))
         fraud_count = sum(1 for t in txns if t.is_fraud)
         # With 50% fraud rate, expect 400-600 fraudulent in 1000
         assert 300 <= fraud_count <= 700
@@ -113,11 +116,11 @@ class TestIsolationForest:
     def test_train_and_predict(self):
         from src.producer.stream_producer import generate_training_dataset
         from src.models.isolation_forest import IsolationForestDetector
-        import tempfile, os
 
         df = generate_training_dataset(
-            n_samples=500, fraud_rate=0.05, save_path="data/test_transactions.csv"
-        )
+            n_samples=500,
+            fraud_rate=0.05,
+            save_path="data/test_transactions.csv")
         model = IsolationForestDetector(contamination=0.05, n_estimators=10)
         summary = model.train(df)
 

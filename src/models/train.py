@@ -10,16 +10,16 @@ Usage:
 Author: Bhushan Jagtap
 """
 
+from models.autoencoder import AutoencoderDetector
+from models.isolation_forest import IsolationForestDetector
+from producer.stream_producer import generate_training_dataset
+import json
+import logging
 import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-import logging
-import json
-from producer.stream_producer import generate_training_dataset
-from models.isolation_forest import IsolationForestDetector
-from models.autoencoder import AutoencoderDetector
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s"
@@ -46,8 +46,9 @@ def train_all(n_samples: int = 10000, fraud_rate: float = 0.02):
         f"Step 1/4: Generating {n_samples} transactions (fraud_rate={fraud_rate:.1%})"
     )
     df = generate_training_dataset(
-        n_samples=n_samples, fraud_rate=fraud_rate, save_path="data/transactions.csv"
-    )
+        n_samples=n_samples,
+        fraud_rate=fraud_rate,
+        save_path="data/transactions.csv")
     print(
         f"\n  ✅ Dataset: {len(df)} rows | "
         f"{df['is_fraud'].sum()} fraud ({df['is_fraud'].mean():.1%})\n"
@@ -55,7 +56,8 @@ def train_all(n_samples: int = 10000, fraud_rate: float = 0.02):
 
     # ── Step 2: Train Isolation Forest ──────────────────────────────
     logger.info("Step 2/4: Training Isolation Forest...")
-    if_model = IsolationForestDetector(contamination=fraud_rate, n_estimators=200)
+    if_model = IsolationForestDetector(
+        contamination=fraud_rate, n_estimators=200)
     if_summary = if_model.train(df)
     if_model.save()
     print(
@@ -79,13 +81,16 @@ def train_all(n_samples: int = 10000, fraud_rate: float = 0.02):
     logger.info("Step 4/4: Quick evaluation on test samples...")
 
     # Test on 5 normal + 5 fraud transactions
-    normal_samples = df[df["is_fraud"] == False].head(5)
-    fraud_samples = df[df["is_fraud"] == True].head(5)
+    normal_samples = df[df["is_fraud"] is False].head(5)
+    fraud_samples = df[df["is_fraud"]].head(5)
 
     print("\n  SAMPLE PREDICTIONS:")
     print(
-        f"  {'Type':<10} {'IF Score':<12} {'AE Error':<12} {'IF Flag':<10} {'AE Flag'}"
-    )
+        f"  {
+            'Type':<10} {
+            'IF Score':<12} {
+                'AE Error':<12} {
+                    'IF Flag':<10} {'AE Flag'}")
     print("  " + "-" * 55)
 
     for _, row in normal_samples.iterrows():
