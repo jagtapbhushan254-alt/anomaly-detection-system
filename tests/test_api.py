@@ -48,8 +48,7 @@ class TestSchemas:
         from src.api.schemas import TransactionRequest
 
         with pytest.raises(Exception):
-            TransactionRequest(
-                **{**SAMPLE_NORMAL, "merchant_category": "invalid_cat"})
+            TransactionRequest(**{**SAMPLE_NORMAL, "merchant_category": "invalid_cat"})
 
     def test_invalid_hour(self):
         from src.api.schemas import TransactionRequest
@@ -92,8 +91,7 @@ class TestStreamProducer:
     def test_fraud_rate_approximately_correct(self):
         from src.producer.stream_producer import generate_stream
 
-        txns = list(generate_stream(
-            fraud_rate=0.5, delay_seconds=0, total=1000))
+        txns = list(generate_stream(fraud_rate=0.5, delay_seconds=0, total=1000))
         fraud_count = sum(1 for t in txns if t.is_fraud)
         # With 50% fraud rate, expect 400-600 fraudulent in 1000
         assert 300 <= fraud_count <= 700
@@ -118,9 +116,8 @@ class TestIsolationForest:
         from src.models.isolation_forest import IsolationForestDetector
 
         df = generate_training_dataset(
-            n_samples=500,
-            fraud_rate=0.05,
-            save_path="data/test_transactions.csv")
+            n_samples=500, fraud_rate=0.05, save_path="data/test_transactions.csv"
+        )
         model = IsolationForestDetector(contamination=0.05, n_estimators=10)
         summary = model.train(df)
 

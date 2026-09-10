@@ -32,16 +32,10 @@ MERCHANT_CATEGORIES = [
 
 # Fraud patterns — unusual but realistic
 FRAUD_PATTERNS = {
-    "high_amount_night": {
-        "amount_range": (
-            5000, 50000), "hour_range": (
-                0, 5)}, "rapid_transactions": {
-                    "txn_count_1h": (
-                        10, 50), "amount_range": (
-                            100, 500)}, "distant_location": {
-                                "distance_km": (
-                                    800, 5000), "amount_range": (
-                                        200, 2000)}, }
+    "high_amount_night": {"amount_range": (5000, 50000), "hour_range": (0, 5)},
+    "rapid_transactions": {"txn_count_1h": (10, 50), "amount_range": (100, 500)},
+    "distant_location": {"distance_km": (800, 5000), "amount_range": (200, 2000)},
+}
 
 
 @dataclass
@@ -68,8 +62,7 @@ def generate_normal_transaction() -> Transaction:
         day_of_week=int(np.random.randint(0, 7)),
         transaction_count_1h=int(np.random.poisson(lam=2)),
         avg_amount_7d=round(np.random.lognormal(mean=4.0, sigma=0.8), 2),
-        distance_from_home_km=round(
-            abs(np.random.normal(loc=15, scale=20)), 2),
+        distance_from_home_km=round(abs(np.random.normal(loc=15, scale=20)), 2),
         is_fraud=False,
         timestamp=time.time(),
     )
@@ -80,8 +73,7 @@ def generate_fraud_transaction() -> Transaction:
     pattern_name = np.random.choice(list(FRAUD_PATTERNS.keys()))
     pattern = FRAUD_PATTERNS[pattern_name]
 
-    amount = round(np.random.uniform(
-        *pattern.get("amount_range", (500, 5000))), 2)
+    amount = round(np.random.uniform(*pattern.get("amount_range", (500, 5000))), 2)
 
     hour = (
         int(np.random.uniform(*pattern.get("hour_range", (0, 23))))
@@ -91,8 +83,7 @@ def generate_fraud_transaction() -> Transaction:
 
     txn_count = int(np.random.uniform(*pattern.get("txn_count_1h", (1, 3))))
 
-    distance = round(np.random.uniform(
-        *pattern.get("distance_km", (50, 200))), 2)
+    distance = round(np.random.uniform(*pattern.get("distance_km", (50, 200))), 2)
 
     return Transaction(
         transaction_id=str(uuid.uuid4())[:12],
@@ -132,19 +123,20 @@ def generate_stream(
     """
     count = 0
     logger.info(
-        f"Stream started | fraud_rate={
-            fraud_rate:.1%} | delay={delay_seconds}s")
+        f"Stream started | fraud_rate={fraud_rate:.1%} | delay={delay_seconds}s"
+    )
 
     while total is None or count < total:
         is_fraud = np.random.random() < fraud_rate
-        txn = (generate_fraud_transaction()
-               if is_fraud else generate_normal_transaction())
+        txn = (
+            generate_fraud_transaction() if is_fraud else generate_normal_transaction()
+        )
 
         if is_fraud:
             logger.warning(
-                f"⚠️  FRAUD transaction generated: {
-                    txn.transaction_id} | ${
-                    txn.amount}")
+                f"⚠️ FRAUD transaction generated: "
+                f"{txn.transaction_id} | ${txn.amount}"
+            )
 
         yield txn
         count += 1
@@ -172,17 +164,13 @@ def generate_training_dataset(
     logger.info(f"Generating {n_samples} training samples...")
     transactions = []
 
-    for txn in generate_stream(
-            fraud_rate=fraud_rate,
-            delay_seconds=0,
-            total=n_samples):
+    for txn in generate_stream(fraud_rate=fraud_rate, delay_seconds=0, total=n_samples):
         transactions.append(asdict(txn))
 
     df = pd.DataFrame(transactions)
 
     # Encode categorical feature
-    df["merchant_category_encoded"] = pd.Categorical(
-        df["merchant_category"]).codes
+    df["merchant_category_encoded"] = pd.Categorical(df["merchant_category"]).codes
 
     logger.info(
         f"Dataset ready: {len(df)} rows | "
@@ -205,8 +193,7 @@ if __name__ == "__main__":
         generate_stream(fraud_rate=0.3, delay_seconds=0.5, total=5)
     ):
         label = "🔴 FRAUD" if txn.is_fraud else "🟢 NORMAL"
-        print(
-            f"{label} | ID: {
+        print(f"{label} | ID: {
                 txn.transaction_id} | Amount: ${
                 txn.amount:,.2f} | " f"Hour: {
                 txn.hour_of_day}:00 | Distance: {

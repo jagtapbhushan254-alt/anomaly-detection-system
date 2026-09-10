@@ -21,8 +21,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-st.set_page_config(page_title="Anomaly Detection",
-                   page_icon="🔍", layout="wide")
+st.set_page_config(page_title="Anomaly Detection", page_icon="🔍", layout="wide")
 API_URL = "https://anomaly-detection-system-h4jj.onrender.com"
 
 st.markdown(
@@ -126,8 +125,8 @@ def call_api(txn_dict):
 # Sidebar
 with st.sidebar:
     st.markdown(
-        '<div class="side-brand">⚡ Sentinel Monitor</div>',
-        unsafe_allow_html=True)
+        '<div class="side-brand">⚡ Sentinel Monitor</div>', unsafe_allow_html=True
+    )
     st.markdown(
         '<div class="side-caption">Financial risk operations console</div>',
         unsafe_allow_html=True,
@@ -188,13 +187,10 @@ st.markdown(
 total = st.session_state.total
 n_an = len(st.session_state.anomalies)
 rate = (n_an / total * 100) if total > 0 else 0
-high = sum(1 for a in st.session_state.anomalies if a.get(
-    "risk_level") == "HIGH")
-medium = sum(1 for a in st.session_state.anomalies if a.get(
-    "risk_level") == "MEDIUM")
+high = sum(1 for a in st.session_state.anomalies if a.get("risk_level") == "HIGH")
+medium = sum(1 for a in st.session_state.anomalies if a.get("risk_level") == "MEDIUM")
 avg_conf = (
-    sum(float(a.get("ensemble_confidence", 0))
-        for a in st.session_state.transactions)
+    sum(float(a.get("ensemble_confidence", 0)) for a in st.session_state.transactions)
     / len(st.session_state.transactions)
     if st.session_state.transactions
     else 0
@@ -260,8 +256,7 @@ with ch:
                         color=color,
                         size=9 if flag else 6,
                         symbol=sym,
-                        line=dict(width=2, color=color) if flag else dict(
-                            width=0),
+                        line=dict(width=2, color=color) if flag else dict(width=0),
                     ),
                 )
             )
@@ -310,14 +305,13 @@ if st.session_state.transactions:
         unsafe_allow_html=True,
     )
     recent = pd.DataFrame(st.session_state.transactions[-8:][::-1]).copy()
-    recent["Status"] = recent["is_anomaly"].map(
-        {True: "🚨 ALERT", False: "✓ NORMAL"})
+    recent["Status"] = recent["is_anomaly"].map({True: "🚨 ALERT", False: "✓ NORMAL"})
     recent["Amount"] = recent["amount"].map(lambda x: f"${x:,.2f}")
     recent["Confidence"] = recent["ensemble_confidence"].map(
-        lambda x: f"{x * 100:.1f}%")
+        lambda x: f"{x * 100:.1f}%"
+    )
     recent["Risk"] = recent["risk_level"].map(lambda x: str(x))
-    recent = recent[["Status", "Amount",
-                     "merchant_category", "Risk", "Confidence"]]
+    recent = recent[["Status", "Amount", "merchant_category", "Risk", "Confidence"]]
     recent.columns = ["Status", "Amount", "Merchant", "Risk", "Confidence"]
     st.dataframe(recent, use_container_width=True, hide_index=True)
 

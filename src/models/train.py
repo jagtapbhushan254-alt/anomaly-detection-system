@@ -46,18 +46,16 @@ def train_all(n_samples: int = 10000, fraud_rate: float = 0.02):
         f"Step 1/4: Generating {n_samples} transactions (fraud_rate={fraud_rate:.1%})"
     )
     df = generate_training_dataset(
-        n_samples=n_samples,
-        fraud_rate=fraud_rate,
-        save_path="data/transactions.csv")
+        n_samples=n_samples, fraud_rate=fraud_rate, save_path="data/transactions.csv"
+    )
     print(
-        f"\n  ✅ Dataset: {len(df)} rows | "
+        f" ✅ Dataset: {len(df)} rows | "
         f"{df['is_fraud'].sum()} fraud ({df['is_fraud'].mean():.1%})\n"
     )
 
     # ── Step 2: Train Isolation Forest ──────────────────────────────
     logger.info("Step 2/4: Training Isolation Forest...")
-    if_model = IsolationForestDetector(
-        contamination=fraud_rate, n_estimators=200)
+    if_model = IsolationForestDetector(contamination=fraud_rate, n_estimators=200)
     if_summary = if_model.train(df)
     if_model.save()
     print(
@@ -81,57 +79,38 @@ def train_all(n_samples: int = 10000, fraud_rate: float = 0.02):
     logger.info("Step 4/4: Quick evaluation on test samples...")
 
     # Test on 5 normal + 5 fraud transactions
-    normal_samples = df[df["is_fraud"] is False].head(5)
-    fraud_samples = df[df["is_fraud"]].head(5)
+normal_samples = df[~df["is_fraud"]].head(5)
+fraud_samples = df[df["is_fraud"]].head(5)
 
-    print("\n  SAMPLE PREDICTIONS:")
+print("\n  SAMPLE PREDICTIONS:")
+print(
+    f"  {'Type':<10} {'IF Score':<12} {'AE Error':<12} "
+    f"{'IF Flag':<10} {'AE Flag'}"
+)
+print("  " + "-" * 55)
+
+for _, row in normal_samples.iterrows():
+    features = row.to_dict()
+    if_pred = if_model.predict(features)
+    ae_pred = ae_model.predict(features)
+
     print(
-        f"  {
-            'Type':<10} {
-            'IF Score':<12} {
-                'AE Error':<12} {
-                    'IF Flag':<10} {'AE Flag'}")
-    print("  " + "-" * 55)
+        f"  {'NORMAL':<10} "
+        f"{if_pred['anomaly_score']:<12.4f} "
+        f"{ae_pred['reconstruction_error']:<12.6f} "
+        f"{'⚠️' if if_pred['is_anomaly'] else '✅':<10} "
+        f"{'⚠️' if ae_pred['is_anomaly'] else '✅'}"
+    )
 
-    for _, row in normal_samples.iterrows():
-        features = row.to_dict()
-        if_pred = if_model.predict(features)
-        ae_pred = ae_model.predict(features)
-        print(
-            f"  {'NORMAL':<10} {if_pred['anomaly_score']:<12.4f} "
-            f"{ae_pred['reconstruction_error']:<12.6f} "
-            f"{'⚠️' if if_pred['is_anomaly'] else '✅':<10} "
-            f"{'⚠️' if ae_pred['is_anomaly'] else '✅'}"
-        )
+for _, row in fraud_samples.iterrows():
+    features = row.to_dict()
+    if_pred = if_model.predict(features)
+    ae_pred = ae_model.predict(features)
 
-    for _, row in fraud_samples.iterrows():
-        features = row.to_dict()
-        if_pred = if_model.predict(features)
-        ae_pred = ae_model.predict(features)
-        print(
-            f"  {'FRAUD':<10} {if_pred['anomaly_score']:<12.4f} "
-            f"{ae_pred['reconstruction_error']:<12.6f} "
-            f"{'🚨' if if_pred['is_anomaly'] else '❌':<10} "
-            f"{'🚨' if ae_pred['is_anomaly'] else '❌'}"
-        )
-
-    # ── Save training summary ────────────────────────────────────────
-    summary = {
-        "dataset": {"n_samples": n_samples, "fraud_rate": fraud_rate},
-        "isolation_forest": if_summary,
-        "autoencoder": ae_summary,
-    }
-    os.makedirs("data/models", exist_ok=True)
-    with open("data/models/training_summary.json", "w") as f:
-        json.dump(summary, f, indent=2)
-
-    print("\n" + "=" * 60)
-    print("  ✅ TRAINING COMPLETE — Models saved to data/models/")
-    print("  Next: uvicorn src.api.main:app --reload --port 8000")
-    print("=" * 60 + "\n")
-
-    return summary
-
-
-if __name__ == "__main__":
-    train_all(n_samples=10000, fraud_rate=0.02)
+    print(
+        f"  {'FRAUD':<10} "
+        f"{if_pred['anomaly_score']:<12.4f} "
+        f"{ae_pred['reconstruction_error']:<12.6f} "
+        f"{'🚨' if if_pred['is_anomaly'] else '❌':<10} "
+        f"{'🚨' if ae_pred['is_anomaly'] else '❌'}"
+    )

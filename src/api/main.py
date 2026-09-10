@@ -48,8 +48,7 @@ def load_models():
         models["loaded"] = True
         logger.info("✅ Both models loaded successfully")
     except FileNotFoundError:
-        logger.warning(
-            "⚠️  Model files not found — run src/models/train.py first")
+        logger.warning("⚠️  Model files not found — run src/models/train.py first")
         models["loaded"] = False
 
 
@@ -110,9 +109,7 @@ def prepare_features(txn: TransactionRequest) -> dict:
         "transaction_count_1h": txn.transaction_count_1h,
         "avg_amount_7d": txn.avg_amount_7d,
         "distance_from_home_km": txn.distance_from_home_km,
-        "merchant_category_encoded": merchant_map.get(
-            txn.merchant_category,
-            0),
+        "merchant_category_encoded": merchant_map.get(txn.merchant_category, 0),
     }
 
 
@@ -129,8 +126,7 @@ def ensemble_predict(features: dict) -> dict:
     if_conf = min(1.0, if_score)
 
     threshold = ae_result["threshold"]
-    ae_conf = min(
-        1.0, ae_result["reconstruction_error"] / max(threshold, 1e-6))
+    ae_conf = min(1.0, ae_result["reconstruction_error"] / max(threshold, 1e-6))
 
     ensemble_conf = (if_conf + ae_conf) / 2
 
@@ -183,8 +179,7 @@ async def predict_single(transaction: TransactionRequest):
     elapsed = round((time.perf_counter() - start) * 1000, 2)
 
     if result["is_anomaly"]:
-        logger.warning(
-            f"🚨 ANOMALY DETECTED | Risk: {
+        logger.warning(f"🚨 ANOMALY DETECTED | Risk: {
                 result['risk_level']} | " f"Score: {
                 result['anomaly_score']} | Amount: ${
                 transaction.amount:,.2f}")
@@ -237,14 +232,12 @@ async def predict_batch(request: BatchRequest):
 async def get_metrics():
     """Return model performance metrics from training."""
     return MetricsResponse(
-        isolation_forest={"precision": 0.89,
-                          "recall": 0.82, "f1": 0.85, "auc": 0.91},
+        isolation_forest={"precision": 0.89, "recall": 0.82, "f1": 0.85, "auc": 0.91},
         autoencoder={
             "precision": 0.91,
             "recall": 0.86,
             "f1": 0.88,
             "reconstruction_threshold": 0.45,
         },
-        ensemble={"precision": 0.94, "recall": 0.88,
-                  "f1": 0.91, "avg_latency_ms": 9.2},
+        ensemble={"precision": 0.94, "recall": 0.88, "f1": 0.91, "avg_latency_ms": 9.2},
     )

@@ -88,8 +88,7 @@ class AutoencoderDetector:
         self.threshold = None
         self.threshold_percentile = threshold_percentile
         self.is_trained = False
-        self.device = torch.device(
-            "cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.to(self.device)
 
     # ── Training ─────────────────────────────────────────────────────────────
@@ -115,8 +114,7 @@ class AutoencoderDetector:
         X_scaled = self.scaler.fit_transform(X).astype(np.float32)
 
         dataset = torch.FloatTensor(X_scaled).to(self.device)
-        optimizer = optim.Adam(self.model.parameters(),
-                               lr=lr, weight_decay=1e-5)
+        optimizer = optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-5)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, patience=5, factor=0.5
         )
@@ -132,7 +130,7 @@ class AutoencoderDetector:
             n_batches = 0
 
             for i in range(0, len(dataset), batch_size):
-                batch = dataset[perm[i: i + batch_size]]
+                batch = dataset[perm[i : i + batch_size]]
                 optimizer.zero_grad()
                 reconstructed = self.model(batch)
                 loss = criterion(reconstructed, batch)
@@ -147,16 +145,14 @@ class AutoencoderDetector:
             scheduler.step(avg_loss)
 
             if (epoch + 1) % 10 == 0:
-                logger.info(
-                    f"Epoch {epoch + 1}/{epochs} | Loss: {avg_loss:.6f}")
+                logger.info(f"Epoch {epoch + 1}/{epochs} | Loss: {avg_loss:.6f}")
 
         # Set anomaly threshold from training errors
         self.model.eval()
         with torch.no_grad():
             errors = self.model.reconstruction_error(dataset).cpu().numpy()
 
-        self.threshold = float(np.percentile(
-            errors, self.threshold_percentile))
+        self.threshold = float(np.percentile(errors, self.threshold_percentile))
         self.is_trained = True
 
         summary = {
@@ -174,15 +170,13 @@ class AutoencoderDetector:
     def predict(self, features: dict) -> dict:
         """Predict anomaly for a single transaction."""
         self._check_trained()
-        X = np.array([[features.get(c, 0)
-                     for c in FEATURE_COLUMNS]], dtype=np.float32)
+        X = np.array([[features.get(c, 0) for c in FEATURE_COLUMNS]], dtype=np.float32)
         X_scaled = self.scaler.transform(X).astype(np.float32)
         tensor = torch.FloatTensor(X_scaled).to(self.device)
 
         self.model.eval()
         with torch.no_grad():
-            error = float(self.model.reconstruction_error(
-                tensor).cpu().numpy()[0])
+            error = float(self.model.reconstruction_error(tensor).cpu().numpy()[0])
 
         is_anomaly = error > self.threshold
 
@@ -214,8 +208,7 @@ class AutoencoderDetector:
         scaler_path=SCALER_PATH,
         threshold_path=THRESHOLD_PATH,
     ):
-        self.model.load_state_dict(torch.load(
-            model_path, map_location=self.device))
+        self.model.load_state_dict(torch.load(model_path, map_location=self.device))
         self.model.eval()
         self.scaler = joblib.load(scaler_path)
         self.threshold = joblib.load(threshold_path)
@@ -224,5 +217,4 @@ class AutoencoderDetector:
 
     def _check_trained(self):
         if not self.is_trained:
-            raise RuntimeError(
-                "Model not trained. Call train() or load() first.")
+            raise RuntimeError("Model not trained. Call train() or load() first.")

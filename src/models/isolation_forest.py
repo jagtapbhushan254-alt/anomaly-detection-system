@@ -118,8 +118,7 @@ class IsolationForestDetector:
         X = self._features_to_array(features)
         X_scaled = self.scaler.transform(X)
 
-        prediction = self.model.predict(
-            X_scaled)[0]  # 1 = normal, -1 = anomaly
+        prediction = self.model.predict(X_scaled)[0]  # 1 = normal, -1 = anomaly
         score = float(self.model.score_samples(X_scaled)[0])
 
         is_anomaly = prediction == -1
@@ -151,8 +150,7 @@ class IsolationForestDetector:
     # Persistence
     # ------------------------------------------------------------------
 
-    def save(self, model_path: str = MODEL_PATH,
-             scaler_path: str = SCALER_PATH):
+    def save(self, model_path: str = MODEL_PATH, scaler_path: str = SCALER_PATH):
         """Save model and scaler to disk."""
         self._check_trained()
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
@@ -160,8 +158,7 @@ class IsolationForestDetector:
         joblib.dump(self.scaler, scaler_path)
         logger.info(f"Model saved to {model_path}")
 
-    def load(self, model_path: str = MODEL_PATH,
-             scaler_path: str = SCALER_PATH):
+    def load(self, model_path: str = MODEL_PATH, scaler_path: str = SCALER_PATH):
         """Load model and scaler from disk."""
         self.model = joblib.load(model_path)
         self.scaler = joblib.load(scaler_path)
@@ -177,8 +174,7 @@ class IsolationForestDetector:
 
     def _check_trained(self):
         if not self.is_trained:
-            raise RuntimeError(
-                "Model not trained. Call train() or load() first.")
+            raise RuntimeError("Model not trained. Call train() or load() first.")
 
     @staticmethod
     def _score_to_risk(score: float) -> str:
