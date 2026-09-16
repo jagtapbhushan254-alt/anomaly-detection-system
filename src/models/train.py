@@ -79,13 +79,14 @@ def train_all(n_samples: int = 10000, fraud_rate: float = 0.02):
     logger.info("Step 4/4: Quick evaluation on test samples...")
 
     # Test on 5 normal + 5 fraud transactions
+
+
 normal_samples = df[~df["is_fraud"]].head(5)
 fraud_samples = df[df["is_fraud"]].head(5)
 
 print("\n  SAMPLE PREDICTIONS:")
 print(
-    f"  {'Type':<10} {'IF Score':<12} {'AE Error':<12} "
-    f"{'IF Flag':<10} {'AE Flag'}"
+    f"  {'Type':<10} {'IF Score':<12} {'AE Error':<12} " f"{'IF Flag':<10} {'AE Flag'}"
 )
 print("  " + "-" * 55)
 
