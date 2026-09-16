@@ -179,10 +179,11 @@ async def predict_single(transaction: TransactionRequest):
     elapsed = round((time.perf_counter() - start) * 1000, 2)
 
     if result["is_anomaly"]:
-        logger.warning(f"🚨 ANOMALY DETECTED | Risk: {
-                result['risk_level']} | " f"Score: {
-                result['anomaly_score']} | Amount: ${
-                transaction.amount:,.2f}")
+        logger.warning(
+            f"🚨 ANOMALY DETECTED | Risk: {result['risk_level']} | "
+            f"Score: {result['anomaly_score']} | "
+            f"Amount: ${transaction.amount:,.2f}"
+        )
 
     return PredictionResponse(
         transaction_id=str(uuid.uuid4())[:12],

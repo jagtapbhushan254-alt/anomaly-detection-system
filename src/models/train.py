@@ -13,7 +13,6 @@ Author: Bhushan Jagtap
 from models.autoencoder import AutoencoderDetector
 from models.isolation_forest import IsolationForestDetector
 from producer.stream_producer import generate_training_dataset
-import json
 import logging
 import sys
 import os
@@ -80,38 +79,38 @@ def train_all(n_samples: int = 10000, fraud_rate: float = 0.02):
 
     # Test on 5 normal + 5 fraud transactions
 
+    normal_samples = df[~df["is_fraud"]].head(5)
+    fraud_samples = df[df["is_fraud"]].head(5)
 
-normal_samples = df[~df["is_fraud"]].head(5)
-fraud_samples = df[df["is_fraud"]].head(5)
-
-print("\n  SAMPLE PREDICTIONS:")
-print(
-    f"  {'Type':<10} {'IF Score':<12} {'AE Error':<12} " f"{'IF Flag':<10} {'AE Flag'}"
-)
-print("  " + "-" * 55)
-
-for _, row in normal_samples.iterrows():
-    features = row.to_dict()
-    if_pred = if_model.predict(features)
-    ae_pred = ae_model.predict(features)
-
+    print("\n  SAMPLE PREDICTIONS:")
     print(
-        f"  {'NORMAL':<10} "
-        f"{if_pred['anomaly_score']:<12.4f} "
-        f"{ae_pred['reconstruction_error']:<12.6f} "
-        f"{'⚠️' if if_pred['is_anomaly'] else '✅':<10} "
-        f"{'⚠️' if ae_pred['is_anomaly'] else '✅'}"
+        f"  {'Type':<10} {'IF Score':<12} {'AE Error':<12} "
+        f"{'IF Flag':<10} {'AE Flag'}"
     )
+    print("  " + "-" * 55)
 
-for _, row in fraud_samples.iterrows():
-    features = row.to_dict()
-    if_pred = if_model.predict(features)
-    ae_pred = ae_model.predict(features)
+    for _, row in normal_samples.iterrows():
+        features = row.to_dict()
+        if_pred = if_model.predict(features)
+        ae_pred = ae_model.predict(features)
 
-    print(
-        f"  {'FRAUD':<10} "
-        f"{if_pred['anomaly_score']:<12.4f} "
-        f"{ae_pred['reconstruction_error']:<12.6f} "
-        f"{'🚨' if if_pred['is_anomaly'] else '❌':<10} "
-        f"{'🚨' if ae_pred['is_anomaly'] else '❌'}"
-    )
+        print(
+            f"  {'NORMAL':<10} "
+            f"{if_pred['anomaly_score']:<12.4f} "
+            f"{ae_pred['reconstruction_error']:<12.6f} "
+            f"{'⚠️' if if_pred['is_anomaly'] else '✅':<10} "
+            f"{'⚠️' if ae_pred['is_anomaly'] else '✅'}"
+        )
+
+    for _, row in fraud_samples.iterrows():
+        features = row.to_dict()
+        if_pred = if_model.predict(features)
+        ae_pred = ae_model.predict(features)
+
+        print(
+            f"  {'FRAUD':<10} "
+            f"{if_pred['anomaly_score']:<12.4f} "
+            f"{ae_pred['reconstruction_error']:<12.6f} "
+            f"{'🚨' if if_pred['is_anomaly'] else '❌':<10} "
+            f"{'🚨' if ae_pred['is_anomaly'] else '❌'}"
+        )

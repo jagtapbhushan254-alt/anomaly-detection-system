@@ -199,20 +199,17 @@ avg_conf = (
 k1, k2, k3, k4, k5 = st.columns(5)
 with k1:
     st.markdown(
-        f'<div class="mini-card"><div class="mini-label">Transactions screened</div><div class="mini-value">{
-            total:,    }</div><div class="mini-sub">Live transaction volume</div></div>',
+        f'<div class="mini-card"><div class="mini-label">Transactions screened</div><div class="mini-value">{total:,}</div><div class="mini-sub">Live transaction volume</div></div>',
         unsafe_allow_html=True,
     )
 with k2:
     st.markdown(
-        f'<div class="mini-card"><div class="mini-label">Anomalies detected</div><div class="mini-value">{
-            n_an:,    }</div><div class="mini-sub">Potentially suspicious</div></div>',
+        f'<div class="mini-card"><div class="mini-label">Anomalies detected</div><div class="mini-value">{n_an:,}</div><div class="mini-sub">Potentially suspicious</div></div>',
         unsafe_allow_html=True,
     )
 with k3:
     st.markdown(
-        f'<div class="mini-card"><div class="mini-label">Anomaly rate</div><div class="mini-value">{
-            rate:.1f}%</div><div class="mini-sub">Share of screened activity</div></div>',
+        f'<div class="mini-card"><div class="mini-label">Anomaly rate</div><div class="mini-value">{rate:.1f}%</div><div class="mini-sub">Share of screened activity</div></div>',
         unsafe_allow_html=True,
     )
 with k4:

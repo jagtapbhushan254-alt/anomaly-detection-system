@@ -193,8 +193,9 @@ if __name__ == "__main__":
         generate_stream(fraud_rate=0.3, delay_seconds=0.5, total=5)
     ):
         label = "🔴 FRAUD" if txn.is_fraud else "🟢 NORMAL"
-        print(f"{label} | ID: {
-                txn.transaction_id} | Amount: ${
-                txn.amount:,.2f} | " f"Hour: {
-                txn.hour_of_day}:00 | Distance: {
-                    txn.distance_from_home_km}km")
+        print(
+            f"{label} | ID: {txn.transaction_id} | "
+            f"Amount: ${txn.amount:,.2f} | "
+            f"Hour: {txn.hour_of_day}:00 | "
+            f"Distance: {txn.distance_from_home_km}km"
+        )
