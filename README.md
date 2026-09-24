@@ -1,480 +1,702 @@
-🔍 Real-Time Financial Anomaly Detection System
+# 🔍 Real-Time Financial Anomaly Detection System
 
-An end-to-end machine learning system for detecting anomalous financial transactions using an ensemble of Isolation Forest and PyTorch Autoencoder models, exposed through a FastAPI inference service and monitored through an interactive Streamlit dashboard.
+<p align="center">
 
-📌 Overview
+**An End-to-End Machine Learning & MLOps System for Detecting Suspicious Financial Transactions**
 
-Financial transaction systems can generate large volumes of data, making it difficult to manually identify unusual or potentially fraudulent activity.
+</p>
 
-This project implements a complete anomaly detection pipeline that combines:
+<p align="center">
 
-Synthetic financial transaction generation
-Feature engineering and preprocessing
-Isolation Forest anomaly detection
-PyTorch Autoencoder-based anomaly detection
-Ensemble risk assessment
-REST API inference using FastAPI
-Interactive monitoring using Streamlit
-Docker-based deployment
-Automated testing with Pytest
-Code quality checks with Black and Flake8
-Continuous Integration using GitHub Actions
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-Machine%20Learning-F7931E?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=github-actions&logoColor=white)](https://github.com/features/actions)
 
-The project is designed with a focus on machine learning engineering, API development, deployment, testing, and MLOps practices.
+</p>
 
-🎯 Key Features
-🤖 Machine Learning
-Isolation Forest for unsupervised anomaly detection
-PyTorch Autoencoder for reconstruction-error-based anomaly detection
-Ensemble-based anomaly assessment
-Transaction risk classification
-Anomaly score generation
-Feature preprocessing for model inference
-⚡ Real-Time Inference
-FastAPI REST API
-Transaction-level prediction
-Low-overhead model inference
-Structured prediction responses
-API health/status endpoints
-📊 Monitoring Dashboard
+<p align="center">
 
-The Streamlit dashboard provides an interactive interface for monitoring transaction activity and anomaly predictions.
+[![Tests](https://img.shields.io/badge/Tests-14%20Passing-success?logo=pytest&logoColor=white)](https://pytest.org/)
+[![Black](https://img.shields.io/badge/Code%20Style-Black-black?logo=python&logoColor=white)](https://black.readthedocs.io/)
+[![Flake8](https://img.shields.io/badge/Linting-Flake8-blueviolet)](https://flake8.pycqa.org/)
+[![License](https://img.shields.io/badge/Status-Active%20Development-orange)]()
 
-Features include:
+</p>
 
-Transaction screening statistics
-Anomaly detection status
-Risk-level information
-Anomaly scores
-Transaction details
-Model inference information
-Real-time/streaming transaction visualization
-🧪 Testing & Code Quality
+---
 
-The repository includes automated:
+## 🎯 **Overview**
 
-Pytest test suite
-Python 3.10 testing
-Python 3.11 testing
-Black formatting validation
-Flake8 linting
-GitHub Actions CI
+Financial transaction systems generate enormous volumes of data, making it difficult to identify **unusual, suspicious, or potentially fraudulent transactions** using manual analysis alone.
 
-The current test suite contains 14 passing tests.
+This project implements an **end-to-end financial anomaly detection system** that combines **classical machine learning, deep learning, real-time inference, API development, interactive monitoring, containerization, automated testing, and CI/CD**.
 
-🏗️ System Architecture
-                    ┌─────────────────────────┐
-                    │   Financial Transaction │
-                    │          Input          │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │ Feature Preparation &   │
-                    │    Preprocessing        │
-                    └────────────┬────────────┘
-                                 │
-                  ┌──────────────┴──────────────┐
-                  │                             │
-                  ▼                             ▼
-       ┌─────────────────────┐       ┌─────────────────────┐
-       │   Isolation Forest  │       │  PyTorch Autoencoder│
-       │                     │       │                     │
-       │  Tree-based        │       │ Reconstruction      │
-       │  anomaly detection │       │ error detection     │
-       └──────────┬──────────┘       └──────────┬──────────┘
-                  │                             │
-                  └──────────────┬──────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │    Ensemble Decision    │
-                    │                         │
-                    │ Anomaly Score / Risk    │
-                    │ Level / Prediction      │
-                    └────────────┬────────────┘
-                                 │
-                    ┌────────────┴────────────┐
-                    │                         │
-                    ▼                         ▼
-          ┌──────────────────┐      ┌──────────────────┐
-          │   FastAPI API    │      │    Streamlit     │
-          │                  │      │    Dashboard     │
-          │ REST Inference   │      │ Monitoring/UI    │
-          └──────────────────┘      └──────────────────┘
-🧠 Machine Learning Approach
-1. Isolation Forest
+The system uses an ensemble of:
 
-Isolation Forest is used as a tree-based unsupervised anomaly detection model.
+- 🌲 **Isolation Forest** for unsupervised tree-based anomaly detection
+- 🧠 **PyTorch Autoencoder** for reconstruction-error-based detection
+- ⚡ **FastAPI** for real-time REST API inference
+- 📊 **Streamlit** for interactive transaction monitoring
+- 🐳 **Docker** for containerized deployment
+- 🧪 **Pytest** for automated testing
+- 🔄 **GitHub Actions** for Continuous Integration
+
+> 💡 **Core Idea:** Combine multiple anomaly detection signals to provide a more comprehensive assessment of potentially suspicious financial transactions.
+
+---
+
+# 🚀 **Key Features**
+
+## 🤖 **Machine Learning**
+
+- 🌲 **Isolation Forest** for unsupervised anomaly detection
+- 🧠 **PyTorch Autoencoder** for reconstruction-based anomaly detection
+- 🔗 **Ensemble detection** combining signals from both models
+- 📈 **Anomaly score generation**
+- 🚨 **Risk-level classification**
+- ⚙️ Configurable model parameters
+- 💾 Persistent trained model artifacts
+
+---
+
+## ⚡ **Real-Time Inference**
+
+- 🚀 **FastAPI REST API**
+- 💳 Transaction-level prediction
+- ⚡ Low-overhead model inference
+- 📦 Structured API responses
+- ❤️ API health/status endpoints
+- 📚 Interactive **Swagger/OpenAPI documentation**
+
+---
+
+## 📊 **Interactive Monitoring Dashboard**
+
+The Streamlit dashboard provides an interface for monitoring transaction activity and model predictions.
+
+### Dashboard capabilities include:
+
+- 📈 Transaction screening statistics
+- 🚨 Anomaly detection status
+- 🛡️ Risk-level information
+- 📊 Anomaly scores
+- 💳 Transaction details
+- 🧠 Model inference information
+- 📡 Transaction/stream visualization
+
+---
+
+## 🧪 **Testing & Code Quality**
+
+The project incorporates software engineering practices including:
+
+- ✅ **Pytest** automated testing
+- 🐍 Python **3.10 & 3.11** CI validation
+- 🖤 **Black** code formatting
+- 🔎 **Flake8** static analysis
+- 🔄 **GitHub Actions** Continuous Integration
+
+---
+
+# 🏗️ **System Architecture**
+
+```text
+                    💳 Financial Transaction
+                              │
+                              ▼
+                ┌─────────────────────────────┐
+                │  ⚙️ Feature Preparation &  │
+                │      Preprocessing          │
+                └──────────────┬──────────────┘
+                               │
+                 ┌─────────────┴─────────────┐
+                 │                           │
+                 ▼                           ▼
+        ┌──────────────────┐       ┌──────────────────┐
+        │ 🌲 Isolation     │       │ 🧠 PyTorch       │
+        │    Forest        │       │    Autoencoder   │
+        │                  │       │                  │
+        │ Tree-Based       │       │ Reconstruction   │
+        │ Detection        │       │ Error Detection │
+        └────────┬─────────┘       └─────────┬────────┘
+                 │                           │
+                 └─────────────┬─────────────┘
+                               │
+                               ▼
+                ┌─────────────────────────────┐
+                │ 🔗 Ensemble Decision        │
+                │                             │
+                │ 📈 Anomaly Score            │
+                │ 🚨 Risk Level               │
+                │ 🎯 Final Prediction         │
+                └──────────────┬──────────────┘
+                               │
+                    ┌──────────┴──────────┐
+                    │                     │
+                    ▼                     ▼
+           ┌────────────────┐    ┌──────────────────┐
+           │ ⚡ FastAPI     │    │ 📊 Streamlit     │
+           │ REST Inference │    │ Monitoring UI    │
+           └────────────────┘    └──────────────────┘
+```
+
+---
+
+# 🧠 **Machine Learning Approach**
+
+## 1️⃣ **Isolation Forest**
+
+**Isolation Forest** is used as a tree-based unsupervised anomaly detection model.
 
 The model identifies observations that are easier to isolate from the rest of the transaction population.
 
-The implementation supports configurable parameters such as:
+### ⚙️ Configurable Parameters
 
-Contamination rate
-Number of estimators
-Model persistence
-Transaction-level prediction
-2. PyTorch Autoencoder
+- 🎛️ Contamination rate
+- 🌲 Number of estimators
+- 💾 Model persistence
+- 💳 Transaction-level prediction
 
-A neural-network-based Autoencoder learns to reconstruct transaction features.
+---
 
-The reconstruction error is used as an anomaly signal:
+## 2️⃣ **PyTorch Autoencoder**
 
-Input Transaction
-       │
-       ▼
-   Encoder
-       │
-       ▼
- Latent Space
-       │
-       ▼
-   Decoder
-       │
-       ▼
-Reconstructed Transaction
-       │
-       ▼
-Reconstruction Error
-       │
-       ▼
- Anomaly Decision
+The Autoencoder is a neural-network-based model that learns to reconstruct transaction features.
 
-The implementation uses PyTorch and supports configurable training parameters including:
+Transactions that produce a **higher reconstruction error** can be treated as potential anomalies.
 
-Number of epochs
-Batch size
-Learning rate
-Anomaly threshold percentile
-3. Ensemble Detection
+```text
+💳 Input Transaction
+        │
+        ▼
+   🧠 Encoder
+        │
+        ▼
+   🔹 Latent Space
+        │
+        ▼
+   🧠 Decoder
+        │
+        ▼
+🔄 Reconstructed Transaction
+        │
+        ▼
+📉 Reconstruction Error
+        │
+        ▼
+🚨 Anomaly Decision
+```
 
-The system combines signals from both models to produce a more comprehensive anomaly assessment.
+### ⚙️ Configurable Training Parameters
 
-The inference pipeline produces information such as:
+- 🔢 Number of epochs
+- 📦 Batch size
+- 📈 Learning rate
+- 🎯 Anomaly threshold percentile
 
-Anomaly status
-Anomaly score
-Risk level
-Reconstruction error
-Transaction information
+---
 
-This allows the system to use both tree-based anomaly detection and neural reconstruction-based detection.
+## 3️⃣ **Ensemble Detection**
 
-⚙️ Technology Stack
-Category	Technologies
-Language	Python
-Machine Learning	Scikit-learn, PyTorch
-Data Processing	Pandas, NumPy
-API	FastAPI, Uvicorn
-Dashboard	Streamlit
-Visualization	Plotly
-Testing	Pytest
-Code Quality	Black, Flake8
-Containerization	Docker
-CI/CD	GitHub Actions
-Version Control	Git, GitHub
-📁 Project Structure
-anomaly-detection-system/
+Instead of relying on a single algorithm, the system combines signals generated by:
+
+**🌲 Isolation Forest + 🧠 Autoencoder**
+
+The resulting inference pipeline provides information such as:
+
+- 🎯 Anomaly status
+- 📈 Anomaly score
+- 🚨 Risk level
+- 📉 Reconstruction error
+- 💳 Transaction information
+
+This approach allows the system to combine **tree-based isolation** with **neural reconstruction-based detection**.
+
+---
+
+# 🛠️ **Technology Stack**
+
+| 🧩 Category | 🔧 Technologies |
+|---|---|
+| 💻 **Language** | Python |
+| 🤖 **Machine Learning** | Scikit-learn, PyTorch |
+| 📊 **Data Processing** | Pandas, NumPy |
+| ⚡ **API** | FastAPI, Uvicorn |
+| 📈 **Dashboard** | Streamlit |
+| 📊 **Visualization** | Plotly |
+| 🧪 **Testing** | Pytest |
+| 🖤 **Code Formatting** | Black |
+| 🔎 **Linting** | Flake8 |
+| 🐳 **Containerization** | Docker, Docker Compose |
+| 🔄 **CI/CD** | GitHub Actions |
+| 📦 **Version Control** | Git, GitHub |
+
+---
+
+# 🗂️ **Project Structure**
+
+```text
+🔍 anomaly-detection-system/
 │
-├── .github/
-│   └── workflows/
+├── ⚙️ .github/
+│   └── 🔄 workflows/
 │       └── ci.yml
 │
-├── data/
-│   └── models/
+├── 📦 data/
+│   └── 🤖 models/
 │
-├── src/
-│   ├── api/
+├── 🚀 src/
+│   │
+│   ├── ⚡ api/
 │   │   └── main.py
 │   │
-│   ├── dashboard/
+│   ├── 📊 dashboard/
 │   │   └── app.py
 │   │
-│   ├── models/
+│   ├── 🧠 models/
 │   │   ├── autoencoder.py
 │   │   ├── isolation_forest.py
 │   │   └── train.py
 │   │
-│   └── producer/
+│   └── 📡 producer/
 │       └── stream_producer.py
 │
-├── tests/
+├── 🧪 tests/
 │   └── test_api.py
 │
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-├── .gitignore
-└── README.md
-🚀 Getting Started
-Prerequisites
+├── 🐳 Dockerfile
+├── 🐳 docker-compose.yml
+├── 📋 requirements.txt
+├── 🚫 .gitignore
+└── 📖 README.md
+```
+
+### 🔎 **Component Overview**
+
+| 📁 Component | 🎯 Purpose |
+|---|---|
+| ⚡ **`api/`** | REST API and model inference |
+| 📊 **`dashboard/`** | Interactive Streamlit monitoring interface |
+| 🧠 **`models/`** | Machine learning models and training pipeline |
+| 📡 **`producer/`** | Transaction data generation/streaming |
+| 🧪 **`tests/`** | Automated application tests |
+| 📦 **`data/models/`** | Trained model artifacts |
+| ⚙️ **`.github/workflows/`** | Automated CI pipeline |
+| 🐳 **Docker** | Containerized deployment |
+| 📋 **`requirements.txt`** | Project dependencies |
+
+---
+
+# 🚀 **Getting Started**
+
+## 📋 **Prerequisites**
 
 Make sure you have:
 
-Python 3.10 or 3.11
-pip
-Git
+- 🐍 **Python 3.10 or 3.11**
+- 📦 **pip**
+- 🔧 **Git**
+- 🐳 **Docker** *(optional)*
 
-Clone the repository:
+---
 
+## 1️⃣ **Clone the Repository**
+
+```bash
 git clone https://github.com/jagtapbhushan254-alt/anomaly-detection-system.git
+
 cd anomaly-detection-system
-🔧 Create Virtual Environment
-Windows
+```
+
+---
+
+## 2️⃣ **Create a Virtual Environment**
+
+### 🪟 Windows
+
+```bash
 python -m venv .venv
+
 .venv\Scripts\activate
-macOS / Linux
+```
+
+### 🐧 macOS / Linux
+
+```bash
 python3 -m venv .venv
+
 source .venv/bin/activate
-📦 Install Dependencies
+```
+
+---
+
+## 3️⃣ **Install Dependencies**
+
+```bash
 pip install -r requirements.txt
-🧠 Train the Models
+```
+
+---
+
+# 🧠 **Train the Models**
 
 The training pipeline generates transaction data and trains both anomaly detection models.
 
 Run:
 
+```bash
 python src/models/train.py
+```
 
-The pipeline performs:
+### 🔄 Training Pipeline
 
-Generate Dataset
-       ↓
-Feature Preparation
-       ↓
-Train Isolation Forest
-       ↓
-Train Autoencoder
-       ↓
-Save Model Artifacts
-       ↓
-Run Sample Predictions
+```text
+📊 Generate Dataset
+        ↓
+⚙️ Feature Preparation
+        ↓
+🌲 Train Isolation Forest
+        ↓
+🧠 Train Autoencoder
+        ↓
+💾 Save Model Artifacts
+        ↓
+🎯 Run Sample Predictions
+```
 
-Model artifacts are stored under:
+Trained model artifacts are stored under:
 
+```text
 data/models/
-⚡ Run the FastAPI Backend
+```
 
-Start the API using:
+---
 
+# ⚡ **Run the FastAPI Backend**
+
+Start the API server:
+
+```bash
 uvicorn src.api.main:app --reload
+```
 
 The API will be available at:
 
+```text
 http://127.0.0.1:8000
+```
 
-FastAPI documentation:
+### 📚 Interactive API Documentation
 
+Open:
+
+```text
 http://127.0.0.1:8000/docs
+```
 
-The interactive Swagger interface can be used to test the prediction endpoints.
+The Swagger interface allows you to interactively test the available prediction endpoints.
 
-📊 Run the Streamlit Dashboard
+---
 
-Start the dashboard with:
+# 📊 **Run the Streamlit Dashboard**
 
+Start the dashboard:
+
+```bash
 streamlit run src/dashboard/app.py
+```
 
 The dashboard provides an interactive interface for viewing transaction screening and anomaly detection results.
 
-🐳 Docker
+---
 
-The project also includes Docker support.
+# 🐳 **Docker Deployment**
 
-Build the image:
+The project supports containerized execution using Docker.
 
+## 🔨 Build the Docker Image
+
+```bash
 docker build -t anomaly-detection-system .
+```
 
-Run the container:
+## ▶️ Run the Container
 
+```bash
 docker run -p 8000:8000 anomaly-detection-system
+```
 
-If using Docker Compose:
+## 🧩 Docker Compose
 
+Alternatively:
+
+```bash
 docker compose up --build
-🧪 Testing
+```
 
-The project includes an automated Pytest suite.
+---
 
-Run all tests:
+# 🧪 **Testing**
 
+The project includes an automated **Pytest** suite.
+
+Run:
+
+```bash
 pytest
+```
 
-Current local test status:
+### ✅ Current Test Status
 
-14 passed
+```text
+14 tests passed
+```
 
-The CI pipeline additionally validates the project against:
+The CI pipeline additionally validates the project using:
 
-Python 3.10
-Python 3.11
-🧹 Code Quality
+```text
+🐍 Python 3.10
+🐍 Python 3.11
+```
 
-The project uses Black for formatting and Flake8 for static code analysis.
+---
 
-Run Black:
+# 🧹 **Code Quality**
 
+The project uses **Black** for formatting and **Flake8** for static analysis.
+
+## 🖤 Format Code
+
+```bash
 black src/ tests/
+```
 
-Check formatting:
+## 🔎 Check Formatting
 
+```bash
 black --check src/ tests/
+```
 
-Run Flake8:
+## 🧹 Run Flake8
 
+```bash
 flake8 src/ tests/ --max-line-length=100 --ignore=E501,W503,E203
-🔄 Continuous Integration
+```
 
-GitHub Actions automatically validates changes pushed to the repository.
+---
 
-The CI pipeline performs:
+# 🔄 **Continuous Integration**
 
-Git Push / Pull Request
+Every push and pull request is automatically validated using **GitHub Actions**.
+
+### 🔁 CI Pipeline
+
+```text
+📤 Push / Pull Request
           │
           ▼
-    GitHub Actions
+   ⚙️ GitHub Actions
           │
      ┌────┴────┐
-     ▼         ▼
-   Tests      Lint
      │         │
-     ├─ Py3.10 ├─ Black
-     └─ Py3.11 └─ Flake8
-Current CI checks
-✅ Python 3.10 tests
-✅ Python 3.11 tests
-✅ Black formatting
-✅ Flake8 linting
-✅ Automated GitHub Actions workflow
+     ▼         ▼
+ 🧪 Tests    🧹 Lint
+     │         │
+ ┌───┴───┐   ┌─┴──────┐
+ ▼       ▼   ▼        ▼
+Py3.10  Py3.11 Black  Flake8
+```
 
-View GitHub Actions →
+### ✅ CI Checks
 
-📡 API Workflow
+- 🐍 Python **3.10** tests
+- 🐍 Python **3.11** tests
+- 🖤 **Black** formatting
+- 🔎 **Flake8** linting
+- 🔄 Automated GitHub Actions workflow
 
-A typical transaction flows through the system as follows:
+👉 **[View GitHub Actions](https://github.com/jagtapbhushan254-alt/anomaly-detection-system/actions)**
 
-Transaction
-    │
-    ▼
-FastAPI Endpoint
-    │
-    ▼
-Feature Preparation
-    │
-    ├───────────────┐
-    ▼               ▼
-Isolation Forest   Autoencoder
-    │               │
-    └───────┬───────┘
-            ▼
-      Ensemble Logic
-            │
-            ▼
-   Risk / Anomaly Result
-            │
-            ▼
-       API Response
-📈 Example Prediction Output
+---
 
-A prediction response contains information about the transaction and the resulting anomaly assessment.
+# 📡 **API Workflow**
 
-Conceptually:
+A typical transaction moves through the system as follows:
 
+```text
+💳 Transaction
+      │
+      ▼
+⚡ FastAPI Endpoint
+      │
+      ▼
+⚙️ Feature Preparation
+      │
+      ├───────────────┐
+      ▼               ▼
+🌲 Isolation      🧠 Autoencoder
+   Forest
+      │               │
+      └───────┬───────┘
+              ▼
+       🔗 Ensemble Logic
+              │
+              ▼
+      🚨 Risk / Anomaly
+           Result
+              │
+              ▼
+       📦 API Response
+```
+
+---
+
+# 📈 **Example Prediction Output**
+
+A prediction response contains transaction information together with the resulting anomaly assessment.
+
+### 💡 Conceptual Response
+
+```json
 {
   "transaction_id": "example-id",
   "is_anomaly": true,
   "risk_level": "HIGH",
   "anomaly_score": 0.XX
 }
+```
 
-The exact response schema is defined by the FastAPI application.
+> ℹ️ The exact response schema is defined by the FastAPI application.
 
-🛡️ Engineering Practices
+---
 
-This project follows several software engineering and MLOps practices:
+# 🛡️ **Engineering Practices**
 
-Modular source-code organization
-Separate model implementations
-Reusable training pipeline
-REST-based model inference
-Containerization
-Automated unit testing
-Continuous Integration
-Code formatting
-Static code analysis
-Reproducible dependency installation
-Model artifact persistence
-🗺️ Development Roadmap
+This project follows several software engineering and MLOps principles:
 
-The original development roadmap has evolved into the current implementation.
+- 🧩 **Modular source-code organization**
+- 🧠 **Separate model implementations**
+- 🔄 **Reusable training pipeline**
+- ⚡ **REST-based model inference**
+- 🐳 **Containerization**
+- 🧪 **Automated testing**
+- 🔄 **Continuous Integration**
+- 🖤 **Code formatting**
+- 🔎 **Static code analysis**
+- 📦 **Reproducible dependency installation**
+- 💾 **Model artifact persistence**
 
-Completed
- Repository initialization
- Transaction data generation
- Feature preprocessing
- Isolation Forest implementation
- PyTorch Autoencoder implementation
- Model training pipeline
- Model artifact persistence
- Ensemble anomaly detection
- FastAPI inference service
- Streamlit dashboard
- Automated tests
- Docker support
- GitHub Actions CI
- Black formatting checks
- Flake8 linting
- Python 3.10 CI testing
- Python 3.11 CI testing
-Future Improvements
- Expand real-world financial transaction datasets
- Add additional anomaly detection models
- Improve model calibration and threshold selection
- Add experiment tracking
- Add model monitoring and drift detection
- Expand automated integration testing
- Add authentication and API security
- Improve production deployment architecture
-🎓 Project Purpose
+The objective is not only to train an ML model, but to demonstrate how a machine learning solution can be developed as an **end-to-end software system**.
 
-This project was developed as a practical machine learning engineering project to demonstrate the integration of:
+---
 
-Machine Learning + Software Engineering + APIs + Deployment + MLOps
+# 🗺️ **Development Roadmap**
 
-Rather than focusing only on model training, the project implements the surrounding engineering infrastructure required to take an anomaly detection model toward an end-to-end application.
+## ✅ **Completed**
 
-📚 Research Background
+- [x] 📊 Transaction data generation
+- [x] ⚙️ Feature preprocessing
+- [x] 🌲 Isolation Forest implementation
+- [x] 🧠 PyTorch Autoencoder implementation
+- [x] 🔄 Model training pipeline
+- [x] 💾 Model artifact persistence
+- [x] 🔗 Ensemble anomaly detection
+- [x] ⚡ FastAPI inference service
+- [x] 📊 Streamlit dashboard
+- [x] 🧪 Automated tests
+- [x] 🐳 Docker support
+- [x] 🔄 GitHub Actions CI
+- [x] 🖤 Black formatting checks
+- [x] 🔎 Flake8 linting
+- [x] 🐍 Python 3.10 CI testing
+- [x] 🐍 Python 3.11 CI testing
 
-The project is also informed by experience working on secure systems and applied machine learning research.
+## 🚧 **Future Improvements**
 
-Publications
+- [ ] 🌍 Expand real-world financial transaction datasets
+- [ ] 🤖 Add additional anomaly detection algorithms
+- [ ] 🎯 Improve model calibration and threshold selection
+- [ ] 📊 Add experiment tracking
+- [ ] 📡 Add model monitoring and drift detection
+- [ ] 🧪 Expand integration testing
+- [ ] 🔐 Add authentication and API security
+- [ ] ☁️ Improve production deployment architecture
 
-MegaShare: A Secure Offline File-Sharing Framework
+---
+
+# 🎓 **Project Purpose**
+
+This project was developed as a practical **Machine Learning Engineering and MLOps project** demonstrating the integration of:
+
+```text
+🤖 Machine Learning
+        +
+💻 Software Engineering
+        +
+⚡ APIs
+        +
+🐳 Deployment
+        +
+🧪 Testing
+        +
+🔄 MLOps
+```
+
+Rather than focusing exclusively on model development, the project demonstrates the supporting engineering infrastructure required to move an anomaly detection model toward an **end-to-end deployable application**.
+
+---
+
+# 📚 **Research Background**
+
+The project is also informed by experience working on **secure systems, machine learning, and applied research**.
+
+### 📄 Publications
+
+**🔐 MegaShare: A Secure Offline File-Sharing Framework**  
 IEEE ICCCNT 2025
 
-Voice Based Biometric Authentication and AI Assistant
+**🎙️ Voice Based Biometric Authentication and AI Assistant**  
 ICASET 2026
 
-The financial anomaly detection system is an independent engineering project focused on practical machine learning, deployment, and MLOps.
+The financial anomaly detection system is an **independent engineering project** focused on practical machine learning, deployment, testing, and MLOps.
 
-👨‍💻 Author
-Bhushan Prabhakar Jagtap
+---
 
-B.E. Computer Engineering
-Pillai HOC College of Engineering & Technology
-Mumbai, India
+# 👨‍💻 **Author**
 
-📧 jagtapbhushan254@gmail.com
+## **Bhushan Prabhakar Jagtap**
 
-🔗 GitHub
+🎓 **B.E. Computer Engineering**  
+🏫 Pillai HOC College of Engineering & Technology  
+📍 Mumbai, India
 
-⭐ Project Status
+📧 **Email:** `jagtapbhushan254@gmail.com`
 
-Active Development
+🔗 **GitHub:**  
+[github.com/jagtapbhushan254-alt](https://github.com/jagtapbhushan254-alt)
 
-The core anomaly detection pipeline, model training, API, dashboard, testing infrastructure, containerization, and CI pipeline are implemented. Further improvements are focused on production hardening, model monitoring, and extending the ML pipeline.
+---
 
-🔗 Repository
+# ⭐ **Project Status**
 
-View the project on GitHub →
+🚀 **Active Development**
+
+The core **anomaly detection pipeline, model training, API, dashboard, testing infrastructure, containerization, and CI pipeline** are implemented.
+
+Future development is focused on:
+
+> 📊 **Better datasets** → 🎯 **Improved model calibration** → 📡 **Model monitoring** → ☁️ **Production deployment**
+
+---
+
+<p align="center">
+
+### 🔍 **Built with Machine Learning • Engineering • APIs • MLOps**
+
+⭐ **If you find this project interesting, consider giving the repository a star!**
+
+</p>
